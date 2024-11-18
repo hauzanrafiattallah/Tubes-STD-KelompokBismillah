@@ -1,4 +1,4 @@
-# Editor Teks Sederhana Menggunakan Struktur Data
+# Teks Editor Sederhana Menggunakan Struktur Data
 
 Proyek ini adalah editor teks sederhana yang dikembangkan menggunakan struktur data penting, sebagai bagian dari tugas besar Mata Kuliah Struktur Data. Editor teks ini menyediakan beberapa fungsi dasar dan lanjutan dengan memanfaatkan struktur data yang efisien seperti Doubly Linked List, Stack, dan Queue.
 
@@ -29,6 +29,7 @@ Proyek ini menekankan implementasi praktis dari struktur data seperti Doubly Lin
 
 ## Anggota Kelompok
 
-**Hauzan Rafi Attallah 103052330011**
-**Dwi Bagus Ryan Kusuma	103052300082**
-**Taufik Qurohman	103052300055**
+- **Hauzan Rafi Attallah** - 103052330011
+- **Dwi Bagus Ryan Kusuma** - 103052300082
+- **Taufik Qurohman** - 103052300055
+
