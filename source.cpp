@@ -1,14 +1,12 @@
 #include "header.h"
 
-// *** Implementasi Fungsi List ***
-
-// Membuat list kosong
+// Fungsi untuk membuat list kosong
 void createList(List &L) {
     L.first = nullptr;
     L.last = nullptr;
 }
 
-// Membuat elemen baru untuk list
+// Fungsi untuk membuat elemen baru pada list
 address createElement(string text) {
     address newElm = new elmList;
     newElm->info = text;
@@ -17,100 +15,104 @@ address createElement(string text) {
     return newElm;
 }
 
-// Menyisipkan baris teks pada posisi tertentu
+// Fungsi untuk menyisipkan baris teks pada posisi tertentu
 void insertLine(List &L, string text, int lineNumber) {
     address newElm = createElement(text);
 
-    // Jika list kosong
     if (L.first == nullptr) {
+        // Jika list kosong
         L.first = newElm;
         L.last = newElm;
+    } else {
+        address current = L.first;
+        int count = 1;
+
+        // Navigasi ke posisi tertentu
+        while (current != nullptr && count < lineNumber) {
+            current = current->next;
+            count++;
+        }
+
+        if (current == nullptr) {
+            // Sisipkan di akhir
+            L.last->next = newElm;
+            newElm->prev = L.last;
+            L.last = newElm;
+        } else {
+            // Sisipkan sebelum current
+            newElm->next = current;
+            newElm->prev = current->prev;
+
+            if (current->prev != nullptr) {
+                current->prev->next = newElm;
+            } else {
+                L.first = newElm;
+            }
+            current->prev = newElm;
+        }
+    }
+}
+
+// Fungsi untuk menghapus baris teks pada posisi tertentu
+void deleteLine(List &L, int lineNumber) {
+    if (L.first == nullptr) {
+        // Jika list kosong
         return;
     }
 
     address current = L.first;
     int count = 1;
 
-    // Navigasi ke posisi yang sesuai
-    while (current && count < lineNumber) {
+    // Navigasi ke baris tertentu
+    while (current != nullptr && count < lineNumber) {
         current = current->next;
         count++;
     }
 
-    if (current == nullptr) { // Sisipkan di akhir
-        L.last->next = newElm;
-        newElm->prev = L.last;
-        L.last = newElm;
-    } else { // Sisipkan sebelum current
-        newElm->next = current;
-        newElm->prev = current->prev;
-
-        if (current->prev) {
-            current->prev->next = newElm;
-        } else {
-            L.first = newElm; // Jika di awal
-        }
-        current->prev = newElm;
-    }
-}
-
-// Menghapus baris teks pada posisi tertentu
-void deleteLine(List &L, int lineNumber) {
-    if (L.first == nullptr) return; // Jika list kosong
-
-    address current = L.first;
-    int count = 1;
-
-    // Navigasi ke baris yang sesuai
-    while (current && count < lineNumber) {
-        current = current->next;
-        count++;
+    if (current == nullptr) {
+        // Jika baris tidak ditemukan
+        return;
     }
 
-    if (!current) return; // Jika baris tidak ditemukan
-
-    // Perbarui pointer sebelum menghapus
-    if (current->prev) {
+    if (current->prev != nullptr) {
         current->prev->next = current->next;
     } else {
-        L.first = current->next; // Jika di awal
+        L.first = current->next;
     }
 
-    if (current->next) {
+    if (current->next != nullptr) {
         current->next->prev = current->prev;
     } else {
-        L.last = current->prev; // Jika di akhir
+        L.last = current->prev;
     }
 
     delete current;
 }
 
-// Menampilkan teks dari awal ke akhir
+// Fungsi untuk menampilkan teks dari awal ke akhir
 void displayListFromFront(List L) {
     address current = L.first;
-    while (current) {
+    while (current != nullptr) {
         cout << current->info << endl;
         current = current->next;
     }
 }
 
-// Menampilkan teks dari akhir ke awal
+// Fungsi untuk menampilkan teks dari akhir ke awal
 void displayListFromBack(List L) {
     address current = L.last;
-    while (current) {
+    while (current != nullptr) {
         cout << current->info << endl;
         current = current->prev;
     }
 }
 
-// *** Implementasi Fungsi Stack ***
-
-// Membuat stack kosong
+// Fungsi untuk membuat stack kosong
 void createStack(Stack &S) {
     S.top = nullptr;
 }
 
-// Menambahkan elemen ke stack
+// Fungsi untuk menambahkan elemen ke stack
 void pushStack(Stack &S, string action, string data, int lineNumber) {
     addressStack newElm = new elmStack;
     newElm->action = action;
@@ -120,9 +122,11 @@ void pushStack(Stack &S, string action, string data, int lineNumber) {
     S.top = newElm;
 }
 
-// Mengambil elemen dari stack
+// Fungsi untuk mengambil elemen dari stack
 bool popStack(Stack &S, string &action, string &data, int &lineNumber) {
-    if (S.top == nullptr) return false;
+    if (S.top == nullptr) {
+        return false;
+    }
 
     addressStack temp = S.top;
     action = temp->action;
@@ -134,44 +138,43 @@ bool popStack(Stack &S, string &action, string &data, int &lineNumber) {
     return true;
 }
 
-// Mengecek apakah stack kosong
+// Fungsi untuk mengecek apakah stack kosong
 bool isStackEmpty(Stack S) {
     return S.top == nullptr;
 }
 
-// *** Implementasi Fungsi Queue ***
-
-// Membuat queue kosong
+// Fungsi untuk membuat queue kosong
 void createQueue(Queue &Q) {
     Q.head = nullptr;
     Q.tail = nullptr;
 }
 
-// Menambahkan data ke clipboard (queue)
+// Fungsi untuk menambahkan data ke clipboard (queue)
 void enqueueClipboard(Queue &Q, string data) {
     addressQueue newElm = new elmQueue;
     newElm->clipboardData = data;
     newElm->next = nullptr;
 
-    if (Q.head == nullptr) { // Jika queue kosong
+    if (Q.head == nullptr) {
         Q.head = newElm;
         Q.tail = newElm;
-        return;
+    } else {
+        Q.tail->next = newElm;
+        Q.tail = newElm;
     }
-
-    Q.tail->next = newElm;
-    Q.tail = newElm;
 }
 
-// Mengambil data dari clipboard (queue)
+// Fungsi untuk mengambil data dari clipboard (queue)
 bool dequeueClipboard(Queue &Q, string &data) {
-    if (Q.head == nullptr) return false; // Jika queue kosong
+    if (Q.head == nullptr) {
+        return false;
+    }
 
     addressQueue temp = Q.head;
     data = temp->clipboardData;
     Q.head = Q.head->next;
 
-    if (Q.head == nullptr) { // Jika elemen terakhir dihapus
+    if (Q.head == nullptr) {
         Q.tail = nullptr;
     }
 
@@ -179,33 +182,32 @@ bool dequeueClipboard(Queue &Q, string &data) {
     return true;
 }
 
-// Mengecek apakah queue kosong
+// Fungsi untuk mengecek apakah queue kosong
 bool isQueueEmpty(Queue Q) {
     return Q.head == nullptr;
 }
 
-// *** Implementasi Fungsi Utility ***
-
-// Mengosongkan redo stack
+// Fungsi untuk mengosongkan redo stack
 void clearRedo(Stack &redoStack) {
     string action, data;
     int lineNumber;
+
     while (!isStackEmpty(redoStack)) {
         popStack(redoStack, action, data, lineNumber);
     }
 }
 
-// Menghapus baris dengan menyimpan undo
+// Fungsi untuk menghapus baris dengan menyimpan undo
 void deleteLineWithUndo(List &L, Stack &undoStack, int lineNumber) {
     address current = L.first;
     int count = 1;
 
-    while (current && count < lineNumber) {
+    while (current != nullptr && count < lineNumber) {
         current = current->next;
         count++;
     }
 
-    if (!current) {
+    if (current == nullptr) {
         cout << "Baris tidak ditemukan.\n";
         return;
     }
@@ -215,7 +217,7 @@ void deleteLineWithUndo(List &L, Stack &undoStack, int lineNumber) {
     deleteLine(L, lineNumber);
 }
 
-// Melakukan undo
+// Fungsi untuk melakukan undo
 void undo(List &L, Stack &undoStack, Stack &redoStack) {
     if (isStackEmpty(undoStack)) {
         cout << "Tidak ada aksi untuk di-undo.\n";
@@ -236,7 +238,7 @@ void undo(List &L, Stack &undoStack, Stack &redoStack) {
     cout << "Undo berhasil.\n";
 }
 
-// Melakukan redo
+// Fungsi untuk melakukan redo
 void redo(List &L, Stack &redoStack, Stack &undoStack) {
     if (isStackEmpty(redoStack)) {
         cout << "Tidak ada aksi untuk di-redo.\n";
@@ -257,17 +259,17 @@ void redo(List &L, Stack &redoStack, Stack &undoStack) {
     cout << "Redo berhasil.\n";
 }
 
-// Menyalin baris ke clipboard
+// Fungsi untuk menyalin baris ke clipboard
 void copyLine(List &L, Queue &clipboardQueue, int lineNumber) {
     address current = L.first;
     int count = 1;
 
-    while (current && count < lineNumber) {
+    while (current != nullptr && count < lineNumber) {
         current = current->next;
         count++;
     }
 
-    if (!current) {
+    if (current == nullptr) {
         cout << "Baris tidak ditemukan untuk disalin.\n";
         return;
     }
@@ -276,7 +278,7 @@ void copyLine(List &L, Queue &clipboardQueue, int lineNumber) {
     cout << "Teks \"" << current->info << "\" telah disalin.\n";
 }
 
-// Menempelkan teks dari clipboard ke baris tertentu
+// Fungsi untuk menempelkan teks dari clipboard ke baris tertentu
 void pasteLine(List &L, Queue &clipboardQueue, int lineNumber) {
     string clipboardData;
     if (!dequeueClipboard(clipboardQueue, clipboardData)) {
