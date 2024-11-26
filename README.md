@@ -1,10 +1,10 @@
 # Teks Editor Sederhana Menggunakan Struktur Data
 
-Proyek ini adalah editor teks sederhana yang dikembangkan menggunakan struktur data penting, sebagai bagian dari tugas besar Mata Kuliah Struktur Data. Editor teks ini menyediakan beberapa fungsi dasar dan lanjutan dengan memanfaatkan struktur data yang efisien seperti Doubly Linked List, Stack, dan Queue.
+Proyek ini adalah teks editor sederhana yang dikembangkan menggunakan struktur data penting, sebagai bagian dari tugas besar Mata Kuliah Struktur Data.teks editor ini menyediakan beberapa fungsi dasar dan lanjutan dengan memanfaatkan struktur data yang efisien seperti Doubly Linked List, Stack, dan Queue.
 
 ## Deskripsi Proyek
 
-Editor Teks Sederhana dirancang untuk menangani operasi pengeditan teks umum secara efisien, dengan fitur-fitur seperti:
+Teks Editor Sederhana dirancang untuk menangani operasi pengeditan teks umum secara efisien, dengan fitur-fitur seperti:
 - **Penyisipan Teks**: Menambahkan teks di posisi tertentu tanpa menimpa konten yang ada.
 - **Penghapusan Teks**: Menghapus karakter atau baris tertentu.
 - **Fitur Undo/Redo**: Mengembalikan atau mengulang aksi yang telah dilakukan menggunakan implementasi berbasis stack.
