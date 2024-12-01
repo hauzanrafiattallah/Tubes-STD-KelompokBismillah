@@ -4,7 +4,9 @@
 void createList(List &L) {
     L.first = nullptr;
     L.last = nullptr;
+    L.cursor = nullptr; // Inisialisasi cursor
 }
+
 
 // Fungsi untuk membuat elemen baru pada list
 address createElement(string text) {
@@ -23,6 +25,7 @@ void insertLine(List &L, string text, int lineNumber) {
         // Jika list kosong
         L.first = newElm;
         L.last = newElm;
+        L.cursor = newElm;
     } else {
         address current = L.first;
         int count = 1;
@@ -288,4 +291,110 @@ void pasteLine(List &L, Queue &clipboardQueue, int lineNumber) {
 
     insertLine(L, clipboardData, lineNumber);
     cout << "Teks \"" << clipboardData << "\" telah ditempel di baris " << lineNumber << ".\n";
+}
+
+void activateCursor(List &L, const string &position) {
+    if (L.first == nullptr) {
+        cout << "List kosong, kursor tidak dapat diaktifkan.\n";
+        return;
+    }
+
+    if (position == "start") {
+        L.cursor = L.first; // Aktifkan kursor di elemen pertama
+        cout << "Kursor diaktifkan di awal list.\n";
+    } else if (position == "end") {
+        L.cursor = L.last; // Aktifkan kursor di elemen terakhir
+        cout << "Kursor diaktifkan di akhir list.\n";
+    } else {
+        cout << "Posisi tidak valid. Gunakan 'start' atau 'end'.\n";
+    }
+}
+
+
+void insertCharacter(List &L, char c) {
+    address newElm = createElement(string(1, c)); // Buat elemen untuk karakter baru
+
+    if (L.first == nullptr) {
+        // Jika list kosong
+        L.first = newElm;
+        L.last = newElm;
+        L.cursor = newElm;
+    } else if (L.cursor == nullptr) {
+        // Jika kursor belum diatur, tambahkan di awal
+        newElm->next = L.first;
+        L.first->prev = newElm;
+        L.first = newElm;
+        L.cursor = newElm;
+    } else {
+        // Sisipkan setelah kursor
+        newElm->next = L.cursor->next;
+        newElm->prev = L.cursor;
+
+        if (L.cursor->next != nullptr) {
+            L.cursor->next->prev = newElm;
+        } else {
+            L.last = newElm; // Jika di akhir, atur last
+        }
+
+        L.cursor->next = newElm;
+        L.cursor = newElm; // Pindahkan kursor ke elemen baru
+    }
+}
+
+
+void deleteCharacterAtCursor(List &L) {
+    if (L.cursor == nullptr) {
+        cout << "Tidak ada karakter untuk dihapus.\n";
+        return;
+    }
+
+    address target = L.cursor;
+
+    if (target->prev != nullptr) {
+        target->prev->next = target->next;
+    } else {
+        L.first = target->next;
+    }
+
+    if (target->next != nullptr) {
+        target->next->prev = target->prev;
+    } else {
+        L.last = target->prev;
+    }
+
+    L.cursor = target->next ? target->next : target->prev;
+    delete target;
+
+    cout << "Karakter berhasil dihapus.\n";
+}
+
+void moveCursor(List &L, const string &direction) {
+    if (L.first == nullptr) {
+        cout << "Teks kosong, kursor tidak bisa dipindahkan.\n";
+        return;
+    }
+
+    if (direction == "r") {
+        if (L.cursor != nullptr && L.cursor->next != nullptr) {
+            L.cursor = L.cursor->next;
+        } else {
+            cout << "Kursor sudah di posisi paling kanan.\n";
+        }
+    } else if (direction == "l") {
+        if (L.cursor != nullptr && L.cursor->prev != nullptr) {
+            L.cursor = L.cursor->prev;
+        } else {
+            cout << "Kursor sudah di posisi paling kiri.\n";
+        }
+    } else {
+        cout << "Perintah tidak valid. Gunakan 'r' atau 'l'.\n";
+    }
+}
+
+void displayCursorPosition(List L) {
+    if (L.cursor == nullptr) {
+        cout << "[Kursor tidak aktif]\n";
+    } else {
+        cout << "[Kursor pada: \"" << L.cursor->info << "\"]\n";
+    }
 }

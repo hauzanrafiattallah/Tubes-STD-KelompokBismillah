@@ -22,6 +22,11 @@ int main() {
         cout << "7. Salin baris ke clipboard\n";
         cout << "8. Tempel teks dari clipboard ke baris tertentu\n";
         cout << "9. Hapus redo stack\n";
+        cout << "10. Tambah karakter di posisi kursor\n";
+        cout << "11. Hapus karakter di posisi kursor\n";
+        cout << "12. Gerakkan kursor (kiri/kanan)\n";
+        cout << "13. Tampilkan posisi kursor\n";
+        cout << "14. Aktifkan kursor\n";
         cout << "0. Keluar\n";
         cout << "===================================================\n";
         cout << "Pilih opsi: ";
@@ -83,6 +88,34 @@ int main() {
                 clearRedo(redoStack);
                 cout << "Redo stack berhasil dikosongkan.\n";
                 break;
+            case 10: {
+                char karakter;
+                cout << "Masukkan karakter untuk ditambahkan: ";
+                cin >> karakter;
+                insertCharacter(editor, karakter);
+                break;
+            }
+            case 11: {
+                deleteCharacterAtCursor(editor);
+                break;
+            }
+            case 12: {
+                string direction;
+                cout << "Masukkan arah (l untuk kiri, r untuk kanan): ";
+                cin >> direction;
+                moveCursor(editor, direction);
+                break;
+            }
+            case 13:
+                displayCursorPosition(editor);
+                break;
+            case 14:{
+                string position;
+                cout << "Pilih posisi kursor ('start' untuk awal, 'end' untuk akhir): ";
+                cin >> position;
+                activateCursor(editor, position);
+                break;
+            }
             case 0:
                 cout << "Terima kasih telah menggunakan editor teks ini. Sampai jumpa!\n";
                 break;

@@ -29,7 +29,9 @@ typedef elmStack* addressStack;
 struct List {
     address first;        // Pointer ke elemen pertama dalam list
     address last;         // Pointer ke elemen terakhir dalam list
+    address cursor;       // Pointer ke posisi kursor
 };
+
 
 // Struktur untuk Stack
 struct Stack {
@@ -75,5 +77,13 @@ bool isQueueEmpty(Queue Q);                    // Mengecek apakah clipboard koso
 void clearRedo(Stack &redoStack);              // Menghapus semua data di redo stack
 void copyLine(List &L, Queue &clipboardQueue, int lineNumber); // Menyalin baris ke clipboard
 void pasteLine(List &L, Queue &clipboardQueue, int lineNumber); // Menempelkan data clipboard ke baris tertentu
+
+// Fitur tambahan
+void activateCursor(List &L, const string &position);
+void insertCharacter(List &L, char c);
+void deleteCharacterAtCursor(List &L);
+void moveCursor(List &L, const string &direction);
+void displayCursorPosition(List L);
+
 
 #endif
