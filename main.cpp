@@ -5,6 +5,7 @@ int main() {
     Stack undoStack, redoStack;
     Queue clipboardQueue;
 
+    // Inisialisasi editor, undo stack, redo stack, dan clipboard queue
     createList(editor);
     createStack(undoStack);
     createStack(redoStack);
@@ -12,108 +13,127 @@ int main() {
 
     int choice;
     do {
+        // Menampilkan menu editor yang lebih terstruktur
         cout << "\n=================== TEXT EDITOR ===================\n";
+        cout << "Pilih aksi yang ingin Anda lakukan:\n";
+        cout << "\n--- Pengeditan Teks ---\n";
         cout << "1. Tambahkan teks pada baris tertentu\n";
         cout << "2. Hapus teks pada baris tertentu\n";
-        cout << "3. Tampilkan teks dari awal ke akhir\n";
-        cout << "4. Tampilkan teks dari akhir ke awal\n";
+        cout << "3. Tampilkan teks\n";
+        
+        cout << "\n--- Undo/Redo ---\n";
         cout << "5. Undo aksi terakhir\n";
         cout << "6. Redo aksi terakhir\n";
+        cout << "9. Hapus riwayat redo\n";
+        
+        cout << "\n--- Clipboard ---\n";
         cout << "7. Salin baris ke clipboard\n";
         cout << "8. Tempel teks dari clipboard ke baris tertentu\n";
-        cout << "9. Hapus redo stack\n";
+        
+        cout << "\n--- Kursor ---\n";
         cout << "10. Tambah karakter di posisi kursor\n";
         cout << "11. Hapus karakter di posisi kursor\n";
         cout << "12. Gerakkan kursor (kiri/kanan)\n";
         cout << "13. Tampilkan posisi kursor\n";
         cout << "14. Aktifkan kursor\n";
+        
+        cout << "\n--- Keluar ---\n";
         cout << "0. Keluar\n";
         cout << "===================================================\n";
-        cout << "Pilih opsi: ";
+        cout << "Pilih opsi (masukkan angka sesuai pilihan): ";
         cin >> choice;
-        cin.ignore(); // Membersihkan buffer newline
+        cin.ignore(); // Membersihkan buffer newline setelah membaca angka
 
         switch (choice) {
             case 1: {
                 string text;
                 int lineNumber;
-                cout << "Masukkan teks: ";
+                cout << "Masukkan teks yang ingin ditambahkan: ";
                 getline(cin, text);
-                cout << "Masukkan nomor baris: ";
+                cout << "Masukkan nomor baris di mana teks akan ditambahkan: ";
                 cin >> lineNumber;
-                insertLine(editor, text, lineNumber);
-                pushStack(undoStack, "INSERT", text, lineNumber);
-                clearRedo(redoStack);
-                cout << "Teks berhasil ditambahkan.\n";
+                insertLine(editor, text, lineNumber);  // Menambahkan teks
+                pushStack(undoStack, "INSERT", text, lineNumber);  // Simpan aksi untuk undo
+                clearRedo(redoStack);  // Kosongkan redo stack setelah aksi baru
+                cout << "Teks berhasil ditambahkan pada baris " << lineNumber << ".\n";
                 break;
             }
             case 2: {
                 int lineNumber;
                 cout << "Masukkan nomor baris yang ingin dihapus: ";
                 cin >> lineNumber;
-                deleteLineWithUndo(editor, undoStack, lineNumber);
-                clearRedo(redoStack);
-                cout << "Baris berhasil dihapus.\n";
+                deleteLineWithUndo(editor, undoStack, lineNumber);  // Hapus baris dengan undo
+                clearRedo(redoStack);  // Kosongkan redo stack
+                cout << "Baris " << lineNumber << " berhasil dihapus.\n";
                 break;
             }
             case 3:
-                cout << "\nTeks dari awal ke akhir:\n";
-                displayListFromFront(editor);
-                break;
-            case 4:
-                cout << "\nTeks dari akhir ke awal:\n";
-                displayListFromBack(editor);
+                cout << "\nTeks:\n";
+                tampilkanTeks(editor);  // Menampilkan teks
                 break;
             case 5:
-                undo(editor, undoStack, redoStack);
+                undo(editor, undoStack, redoStack);  // Melakukan undo
                 break;
             case 6:
-                redo(editor, redoStack, undoStack);
+                redo(editor, redoStack, undoStack);  // Melakukan redo
                 break;
             case 7: {
                 int lineNumber;
                 cout << "Masukkan nomor baris yang ingin disalin: ";
                 cin >> lineNumber;
-                copyLine(editor, clipboardQueue, lineNumber);
+                copyLine(editor, clipboardQueue, lineNumber);  // Menyalin baris ke clipboard
+                cout << "Baris " << lineNumber << " berhasil disalin ke clipboard.\n";
                 break;
             }
             case 8: {
                 int lineNumber;
                 cout << "Masukkan nomor baris untuk menempelkan teks: ";
                 cin >> lineNumber;
-                pasteLine(editor, clipboardQueue, lineNumber);
+                pasteLine(editor, clipboardQueue, lineNumber);  // Menempelkan teks dari clipboard
+                cout << "Teks berhasil ditempelkan pada baris " << lineNumber << ".\n";
                 break;
             }
             case 9:
-                clearRedo(redoStack);
-                cout << "Redo stack berhasil dikosongkan.\n";
+                clearRedo(redoStack);  // Menghapus redo stack
+                cout << "Riwayat redo berhasil dikosongkan.\n";
                 break;
             case 10: {
                 char karakter;
-                cout << "Masukkan karakter untuk ditambahkan: ";
+                cout << "Masukkan karakter untuk ditambahkan di posisi kursor: ";
                 cin >> karakter;
-                insertCharacter(editor, karakter);
+                insertCharacter(editor, karakter);  // Menambah karakter pada posisi kursor
+                cout << "Karakter '" << karakter << "' berhasil ditambahkan.\n";
                 break;
             }
-            case 11: {
-                deleteCharacterAtCursor(editor);
+            case 11:
+                deleteCharacterAtCursor(editor);  // Menghapus karakter pada posisi kursor
+                cout << "Karakter di posisi kursor berhasil dihapus.\n";
                 break;
-            }
             case 12: {
                 string direction;
-                cout << "Masukkan arah (l untuk kiri, r untuk kanan): ";
+                cout << "Masukkan arah gerakan kursor ('k' untuk kiri, 'r' untuk kanan): ";
                 cin >> direction;
-                moveCursor(editor, direction);
+                if (direction == "k" || direction == "r") {
+                    moveCursor(editor, direction);  // Menggerakkan kursor
+                    cout << "Kursor berhasil digerakkan ke " << (direction == "k" ? "kiri" : "kanan") << ".\n";
+                } else {
+                    cout << "Arah tidak valid. Gunakan 'k' untuk kiri atau 'r' untuk kanan.\n";
+                }
                 break;
             }
             case 13:
-                displayCursorPosition(editor);
+                displayCursorPosition(editor);  // Menampilkan posisi kursor
                 break;
-            case 14:{
+            case 14: {
                 string position;
                 cout << "Pilih posisi kursor ('start' untuk awal, 'end' untuk akhir): ";
                 cin >> position;
-                activateCursor(editor, position);
+                if (position == "start" || position == "end") {
+                    activateCursor(editor, position);  // Mengaktifkan kursor di posisi tertentu
+                    cout << "Kursor berhasil dipindahkan ke " << position << ".\n";
+                } else {
+                    cout << "Posisi tidak valid. Gunakan 'start' atau 'end'.\n";
+                }
                 break;
             }
             case 0:
@@ -122,7 +142,7 @@ int main() {
             default:
                 cout << "Opsi tidak valid. Silakan coba lagi.\n";
         }
-    } while (choice != 0);
+    } while (choice != 0);  // Loop hingga pengguna memilih untuk keluar
 
     return 0;
 }

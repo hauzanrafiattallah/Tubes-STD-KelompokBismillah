@@ -92,21 +92,12 @@ void deleteLine(List &L, int lineNumber) {
     delete current;
 }
 
-// Fungsi untuk menampilkan teks dari awal ke akhir
-void displayListFromFront(List L) {
+// Fungsi untuk menampilkan teks
+void tampilkanTeks(List L) {
     address current = L.first;
     while (current != nullptr) {
         cout << current->info << endl;
         current = current->next;
-    }
-}
-
-// Fungsi untuk menampilkan teks dari akhir ke awal
-void displayListFromBack(List L) {
-    address current = L.last;
-    while (current != nullptr) {
-        cout << current->info << endl;
-        current = current->prev;
     }
 }
 

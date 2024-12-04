@@ -32,7 +32,6 @@ struct List {
     address cursor;       // Pointer ke posisi kursor
 };
 
-
 // Struktur untuk Stack
 struct Stack {
     addressStack top;     // Pointer ke elemen teratas dalam stack
@@ -56,8 +55,7 @@ void createList(List &L);                      // Menginisialisasi list kosong
 address createElement(string text);            // Membuat elemen baru untuk list
 void insertLine(List &L, string text, int lineNumber); // Menyisipkan teks di posisi tertentu
 void deleteLine(List &L, int lineNumber);      // Menghapus baris teks tertentu
-void displayListFromFront(List L);             // Menampilkan teks dari awal ke akhir
-void displayListFromBack(List L);              // Menampilkan teks dari akhir ke awal
+void tampilkanTeks(List L);         // Menampilkan teks 
 
 void createStack(Stack &S);                    // Menginisialisasi stack kosong
 void pushStack(Stack &S, string action, string data, int lineNumber); // Menambahkan data ke stack
