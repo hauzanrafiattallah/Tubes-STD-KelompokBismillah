@@ -38,6 +38,7 @@ char pop(CharStack &stack)
     return value;
   }
 }
+
 char top(CharStack &stack)
 {
   if (stack.top != nullptr)
