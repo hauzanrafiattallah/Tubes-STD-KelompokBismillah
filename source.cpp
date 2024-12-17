@@ -7,7 +7,7 @@ void initializeEditor(TextEditor &editor)
 }
 
 // Menambahkan file baru
-void addFile(TextEditor &editor, const string &fileName)
+void addFile(TextEditor &editor, string &fileName)
 {
     FileNode *newFile = new FileNode;
     newFile->fileName = fileName;
@@ -52,7 +52,7 @@ int selectFile(TextEditor &editor)
 }
 
 // Menambahkan karakter ke file tertentu
-void addCharacterToFile(TextEditor &editor, const string &fileName, char character)
+void addCharacterToFile(TextEditor &editor, string &fileName, char character)
 {
     FileNode *file = findFile(editor, fileName);
     if (file != nullptr)
@@ -91,7 +91,7 @@ void addCharacterToFile(TextEditor &editor, const string &fileName, char charact
 }
 
 // Menampilkan semua file yang ada
-void displayFiles(const TextEditor &editor)
+void displayFiles(TextEditor &editor)
 {
     FileNode *temp = editor.files;
     if (temp == nullptr)
@@ -110,7 +110,7 @@ void displayFiles(const TextEditor &editor)
 }
 
 // Mencari file berdasarkan nama
-FileNode *findFile(TextEditor &editor, const string &fileName)
+FileNode *findFile(TextEditor &editor, string &fileName)
 {
     FileNode *temp = editor.files;
     while (temp != nullptr)
@@ -657,11 +657,11 @@ void pasteCutText(FileNode *selectedFile)
 }
 
 // Fungsi untuk mencari teks dalam file mulai dari posisi tertentu
-int findText(FileNode *selectedFile, const std::string &searchText, int startPos)
+int findText(FileNode *selectedFile, string &searchText, int startPos)
 {
     if (selectedFile == nullptr || searchText.empty())
     {
-        std::cout << "File tidak ditemukan atau teks pencarian kosong.\n";
+        cout << "File tidak ditemukan atau teks pencarian kosong.\n";
         return -1; // Tidak ditemukan
     }
 
@@ -676,7 +676,7 @@ int findText(FileNode *selectedFile, const std::string &searchText, int startPos
     }
 
     // Buffer untuk mencocokkan kata
-    std::string buffer;
+    string buffer;
     CharNode *matchStart = temp;
 
     // Menelusuri dokumen untuk mencari kata
@@ -701,23 +701,23 @@ int findText(FileNode *selectedFile, const std::string &searchText, int startPos
         currentPos++;
     }
 
-    std::cout << "Teks tidak ditemukan.\n";
+    cout << "Teks tidak ditemukan.\n";
     return -1; // Tidak ditemukan
 }
 
 // Fungsi untuk mengganti teks dalam file
-void replaceText(FileNode *selectedFile, const std::string &searchText, const std::string &replaceText, int startPos)
+void replaceText(FileNode *selectedFile, string &searchText, string &replaceText, int startPos)
 {
     if (selectedFile == nullptr || searchText.empty())
     {
-        std::cout << "File tidak ditemukan atau teks pencarian kosong.\n";
+        cout << "File tidak ditemukan atau teks pencarian kosong.\n";
         return;
     }
 
     int pos = findText(selectedFile, searchText, startPos);
     if (pos == -1)
     {
-        std::cout << "Teks tidak ditemukan, tidak ada yang diganti.\n";
+        cout << "Teks tidak ditemukan, tidak ada yang diganti.\n";
         return;
     }
 
