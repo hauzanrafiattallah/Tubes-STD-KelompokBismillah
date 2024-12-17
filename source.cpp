@@ -1,101 +1,5 @@
 #include "header.h"
-
-// Fungsi untuk inisialisasi stack
-void createStack(CharStack &stack)
-{
-    stack.top = nullptr; // Stack kosong
-}
-
-// Fungsi untuk memeriksa apakah stack kosong
-bool isStackEmpty(CharStack &stack)
-{
-    return stack.top == nullptr;
-}
-
-// Fungsi untuk menambahkan elemen ke stack (push)
-void push(CharStack &stack, char value)
-{
-    CharNode *newNode = new CharNode;
-    newNode->character = value;
-    newNode->next = stack.top; // Node baru menunjuk ke top lama
-    stack.top = newNode;       // Update top menjadi node baru
-}
-
-// Fungsi untuk menghapus elemen dari stack (pop)
-char pop(CharStack &stack)
-{
-    if (isStackEmpty(stack))
-    {
-        cout << "Stack kosong!\n";
-        return '\0'; // Return karakter kosong jika stack kosong
-    }
-    else
-    {
-        CharNode *temp = stack.top;
-        char value = temp->character;
-        stack.top = stack.top->next; // Update top ke node berikutnya
-        delete temp;                 // Hapus node lama
-        return value;
-    }
-}
-char top(CharStack &stack)
-{
-    if (stack.top != nullptr)
-    {
-        return stack.top->character; // Mengambil karakter dari node teratas
-    }
-    return '\0'; // Jika stack kosong, return karakter kosong
-}
-
-// Fungsi untuk inisialisasi queue
-void createQueue(CharQueue &queue)
-{
-    queue.front = queue.rear = nullptr; // Queue kosong
-}
-
-// Fungsi untuk memeriksa apakah queue kosong
-bool isQueueEmpty(CharQueue &queue)
-{
-    return queue.front == nullptr;
-}
-
-// Fungsi untuk menambahkan elemen ke queue (enqueue)
-void enqueue(CharQueue &queue, char value)
-{
-    CharNode *newNode = new CharNode;
-    newNode->character = value;
-    newNode->next = nullptr;
-
-    if (isQueueEmpty(queue))
-    {
-        queue.front = queue.rear = newNode; // Queue kosong, front dan rear menunjuk ke node baru
-    }
-    else
-    {
-        queue.rear->next = newNode; // Rear lama menunjuk ke node baru
-        queue.rear = newNode;       // Update rear ke node baru
-    }
-}
-
-// Fungsi untuk menghapus elemen dari queue (dequeue)
-char dequeue(CharQueue &queue)
-{
-    if (isQueueEmpty(queue))
-    {
-        cout << "Queue kosong!\n";
-        return '\0'; // Return karakter kosong jika queue kosong
-    }
-    else
-    {
-        CharNode *temp = queue.front;
-        char value = temp->character;
-        queue.front = queue.front->next; // Update front ke node berikutnya
-        if (queue.front == nullptr)      // Jika queue kosong setelah dequeue
-            queue.rear = nullptr;
-        delete temp; // Hapus node lama
-        return value;
-    }
-}
+#include "primitive.cpp"
 
 // Inisialisasi editor teks
 void initializeEditor(TextEditor &editor)
@@ -415,7 +319,7 @@ void displayFileContent(FileNode *selectedFile)
         if (currentPosition == selectedFile->cursorPosition)
         {
             // Jika kursor berada di posisi ini, tampilkan karakter dengan tanda kurung
-            cout << "(" << temp->character << ")";
+            cout << "[" << temp->character << "]";
         }
         else
         {
@@ -995,36 +899,4 @@ void addCharacterToFile(FileNode &file, char character)
 
     // Menyimpan perubahan ke dalam undo stack
     push(file.undoRedo.undoStack, character);
-}
-
-// Menampilkan menu utama
-void displayMainMenu()
-{
-    cout << "\n=================== TEXT EDITOR ===================\n";
-    cout << "1. Tambahkan file baru\n";
-    cout << "2. Tampilkan semua file\n";
-    cout << "0. Keluar\n";
-    cout << "===================================================\n";
-    cout << "Pilih opsi: ";
-}
-
-// Menampilkan menu file
-void displayFileMenu()
-{
-    cout << "\n================= FILE MENU =================\n";
-    cout << "1. Tambahkan teks\n";
-    cout << "2. Tampilkan isi file\n";
-    cout << "3. Pindah kursor\n";
-    cout << "4. Hapus karakter di posisi kursor\n";
-    cout << "5. Sisipkan setelah posisi kursor\n";
-    cout << "6. Pilih teks\n";
-    cout << "7. Salin teks\n";
-    cout << "8. Tempelkan teks\n";
-    cout << "9. Potong teks\n";
-    cout << "10. Cari dan Ganti Teks\n";
-    cout << "11. Undo\n";
-    cout << "12. Redo\n";
-    cout << "0. Kembali ke menu utama\n";
-    cout << "=============================================\n";
-    cout << "Pilih opsi: ";
 }
