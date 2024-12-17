@@ -90,14 +90,14 @@ void displayMainMenu();
 void displayFileMenu();
 
 // Fungsi dan prosedur untuk stack (CharStack)
-void initializeStack(CharStack &stack);
-bool isStackEmpty(const CharStack &stack);
+void createStack(CharStack &stack);
+bool isStackEmpty(CharStack &stack);
 void push(CharStack &stack, char value);
 char pop(CharStack &stack);
 
 // Fungsi dan prosedur untuk queue (CharQueue)
-void initializeQueue(CharQueue &queue);
-bool isQueueEmpty(const CharQueue &queue);
+void createQueue(CharQueue &queue);
+bool isQueueEmpty(CharQueue &queue);
 void enqueue(CharQueue &queue, char value);
 char dequeue(CharQueue &queue);
 

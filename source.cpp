@@ -1,13 +1,13 @@
 #include "header.h"
 
 // Fungsi untuk inisialisasi stack
-void initializeStack(CharStack &stack)
+void createStack(CharStack &stack)
 {
     stack.top = nullptr; // Stack kosong
 }
 
 // Fungsi untuk memeriksa apakah stack kosong
-bool isStackEmpty(const CharStack &stack)
+bool isStackEmpty(CharStack &stack)
 {
     return stack.top == nullptr;
 }
@@ -48,13 +48,13 @@ char top(CharStack &stack)
 }
 
 // Fungsi untuk inisialisasi queue
-void initializeQueue(CharQueue &queue)
+void createQueue(CharQueue &queue)
 {
     queue.front = queue.rear = nullptr; // Queue kosong
 }
 
 // Fungsi untuk memeriksa apakah queue kosong
-bool isQueueEmpty(const CharQueue &queue)
+bool isQueueEmpty(CharQueue &queue)
 {
     return queue.front == nullptr;
 }
