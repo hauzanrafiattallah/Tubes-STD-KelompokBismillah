@@ -3,85 +3,76 @@
 
 #include <iostream>
 #include <string>
+#include <stack>
+#include <queue>
 
 using namespace std;
 
-// Struktur Node untuk Doubly Linked List
-struct elmList {
-    string info;          // Data teks yang disimpan
-    elmList* prev;        // Pointer ke elemen sebelumnya
-    elmList* next;        // Pointer ke elemen berikutnya
+// Struktur Node untuk karakter (linked list karakter)
+struct CharNode {
+    char character;         // Karakter yang disimpan
+    CharNode* next;         // Pointer ke node karakter berikutnya
 };
 
-typedef elmList* address;
-
-// Struktur Node untuk Stack
-struct elmStack {
-    string action;        // Aksi (INSERT/DELETE)
-    string data;          // Data teks terkait aksi
-    int lineNumber;       // Nomor baris terkait aksi
-    elmStack* next;       // Pointer ke elemen berikutnya dalam stack
+struct UndoRedoStack {
+    stack<char> undoStack;   // Stack untuk undo
+    queue<char> redoQueue;   // Queue untuk redo
 };
 
-typedef elmStack* addressStack;
-
-// Struktur untuk List
-struct List {
-    address first;        // Pointer ke elemen pertama dalam list
-    address last;         // Pointer ke elemen terakhir dalam list
-    address cursor;       // Pointer ke posisi kursor
+// Struktur Node untuk file (linked list file)
+struct FileNode {
+    string fileName;            // Nama file
+    CharNode* head;             // Pointer ke linked list karakter
+    FileNode* next;             // Pointer ke file berikutnya
+    int cursorPosition;         // Posisi kursor dalam file
+    string clipboard;           // Menyimpan teks yang disalin
+    stack<char> cutBuffer;      // Stack untuk menyimpan teks yang dipotong
+    UndoRedoStack undoRedo;     // Stack undo dan queue redo untuk file ini
 };
 
-// Struktur untuk Stack
-struct Stack {
-    addressStack top;     // Pointer ke elemen teratas dalam stack
+// Struktur untuk teks editor
+struct TextEditor {
+    FileNode* files;        // Linked list untuk menyimpan file-file yang ada
+    string clipboard;       //menyimpan teks yang disalin
 };
 
-// Struktur Node dan Queue untuk Clipboard
-struct elmQueue {
-    string clipboardData; // Data teks dalam clipboard
-    elmQueue* next;       // Pointer ke elemen berikutnya dalam queue
-};
+// Fungsi inisialisasi
+void initializeEditor(TextEditor &editor);
 
-typedef elmQueue* addressQueue;
+// Fungsi file
+int selectFile(TextEditor &editor);
+void addFile(TextEditor &editor, const string &fileName);
+void addCharacterToFile(TextEditor &editor, const string &fileName, char character);
+void displayFiles(const TextEditor &editor);
+FileNode* findFile(TextEditor &editor, const string &fileName);
+FileNode* getFileByIndex(TextEditor &editor, int index);
 
-struct Queue {
-    addressQueue head;    // Pointer ke elemen pertama dalam queue
-    addressQueue tail;    // Pointer ke elemen terakhir dalam queue
-};
+// Fungsi kursor
+void moveCursorLeft(FileNode* selectedFile);
+void moveCursorRight(FileNode* selectedFile);
+void displayCursorPosition(FileNode* selectedFile);
 
-// Primitive Functions
-void createList(List &L);                      // Menginisialisasi list kosong
-address createElement(string text);            // Membuat elemen baru untuk list
-void insertLine(List &L, string text, int lineNumber); // Menyisipkan teks di posisi tertentu
-void deleteLine(List &L, int lineNumber);      // Menghapus baris teks tertentu
-void tampilkanTeks(List L);         // Menampilkan teks 
+// Fungsi untuk operasi file
+void addTextToFile(TextEditor &editor, FileNode* selectedFile);
+void displayFileContent(FileNode* selectedFile);
+void insertTextAfterCursor(FileNode* selectedFile);
+void deleteCharacterAtCursor(FileNode* selectedFile);
+void selectText(FileNode* selectFile, int startPos, int endPos);
+void copyText(FileNode* selectedFile);
+void pasteText(FileNode* selectedFile);
+void cutText(FileNode* selectedFile, int startPos, int endPos);
+void deleteTextInRange(FileNode* selectedFile, int startPos, int endPos);
+void pasteCutText(FileNode* selectedFile);
+int findText(FileNode* selectedFile, const std::string& searchText, int startPos);
+void replaceText(FileNode* selectedFile, const std::string& searchText, const std::string& replaceText, int startPos);
+void undo(FileNode* selectedFile);
+void redo(FileNode* selectedFile);
+void addCharacterToFile(FileNode &file, char character);
 
-void createStack(Stack &S);                    // Menginisialisasi stack kosong
-void pushStack(Stack &S, string action, string data, int lineNumber); // Menambahkan data ke stack
-bool popStack(Stack &S, string &action, string &data, int &lineNumber); // Mengambil elemen dari stack
-bool isStackEmpty(Stack S);                    // Mengecek apakah stack kosong
 
-// Fitur Utama
-void undo(List &L, Stack &undoStack, Stack &redoStack); // Membatalkan aksi terakhir
-void redo(List &L, Stack &redoStack, Stack &undoStack); // Mengulangi aksi terakhir yang dibatalkan
-void deleteLineWithUndo(List &L, Stack &undoStack, int lineNumber); // Menghapus baris dengan undo
 
-// Fitur Tambahan
-void createQueue(Queue &Q);                    // Menginisialisasi queue kosong
-void enqueueClipboard(Queue &Q, string data);  // Menambahkan data ke clipboard
-bool dequeueClipboard(Queue &Q, string &data); // Mengambil data dari clipboard
-bool isQueueEmpty(Queue Q);                    // Mengecek apakah clipboard kosong
-void clearRedo(Stack &redoStack);              // Menghapus semua data di redo stack
-void copyLine(List &L, Queue &clipboardQueue, int lineNumber); // Menyalin baris ke clipboard
-void pasteLine(List &L, Queue &clipboardQueue, int lineNumber); // Menempelkan data clipboard ke baris tertentu
-
-// Fitur tambahan
-void activateCursor(List &L, const string &position);
-void insertCharacter(List &L, char c);
-void deleteCharacterAtCursor(List &L);
-void moveCursor(List &L, const string &direction);
-void displayCursorPosition(List L);
-
+// Fungsi menu
+void displayMainMenu();
+void displayFileMenu();
 
 #endif

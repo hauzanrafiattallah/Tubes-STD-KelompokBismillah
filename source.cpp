@@ -1,388 +1,798 @@
 #include "header.h"
 
-// Fungsi untuk membuat list kosong
-void createList(List &L) {
-    L.first = nullptr;
-    L.last = nullptr;
-    L.cursor = nullptr; // Inisialisasi cursor
+// Inisialisasi editor teks
+void initializeEditor(TextEditor &editor) {
+    editor.files = nullptr;
 }
 
-// Fungsi untuk membuat elemen baru pada list
-address createElement(string text) {
-    address newElm = new elmList;
-    newElm->info = text;
-    newElm->prev = nullptr;
-    newElm->next = nullptr;
-    return newElm;
+// Menambahkan file baru
+void addFile(TextEditor &editor, const string &fileName) {
+    FileNode* newFile = new FileNode;
+    newFile->fileName = fileName;
+    newFile->head = nullptr;
+    newFile->next = editor.files;
+    newFile->cursorPosition = 0;  // Kursor dimulai di posisi awal
+    editor.files = newFile;
 }
 
-// Fungsi untuk menyisipkan baris teks pada posisi tertentu
-void insertLine(List &L, string text, int lineNumber) {
-    address newElm = createElement(text);
+// Memilih file dari daftar
+int selectFile(TextEditor &editor) {
+    FileNode* temp = editor.files;
+    if (temp == nullptr) {
+        cout << "Tidak ada file yang tersedia.\n";
+        return -1; // Tidak ada file
+    }
 
-    if (L.first == nullptr) {
-        // Jika list kosong
-        L.first = newElm;
-        L.last = newElm;
-        L.cursor = newElm;
-    } else {
-        address current = L.first;
-        int count = 1;
+    cout << "\nDaftar file yang tersedia:\n";
+    displayFiles(editor);
 
-        // Navigasi ke posisi tertentu
-        while (current != nullptr && count < lineNumber) {
-            current = current->next;
-            count++;
-        }
+    cout << "0. Batal\n"; // Tambahkan opsi untuk membatalkan
+    cout << "\nPilih nomor file: ";
+    int choice;
+    cin >> choice;
+    cin.ignore(); // Membersihkan buffer input
 
-        if (current == nullptr) {
-            // Sisipkan di akhir
-            L.last->next = newElm;
-            newElm->prev = L.last;
-            L.last = newElm;
+    if (choice == 0) {
+        cout << "Pemilihan file dibatalkan.\n";
+        return -1; // Return -1 untuk menunjukkan pembatalan
+    }
+
+    if (choice < 1 || getFileByIndex(editor, choice) == nullptr) {
+        cout << "Pilihan tidak valid.\n";
+        return -1; // Return -1 untuk pilihan tidak valid
+    }
+
+    return choice;
+}
+
+// Menambahkan karakter ke file tertentu
+void addCharacterToFile(TextEditor &editor, const string &fileName, char character) {
+    FileNode* file = findFile(editor, fileName);
+    if (file != nullptr) {
+        CharNode* newChar = new CharNode;
+        newChar->character = character;
+        newChar->next = nullptr;
+
+        // Menambahkan karakter ke linked list file
+        if (file->head == nullptr) {
+            file->head = newChar;
         } else {
-            // Sisipkan sebelum current
-            newElm->next = current;
-            newElm->prev = current->prev;
-
-            if (current->prev != nullptr) {
-                current->prev->next = newElm;
-            } else {
-                L.first = newElm;
+            CharNode* temp = file->head;
+            while (temp->next != nullptr) {
+                temp = temp->next;
             }
-            current->prev = newElm;
-        }
-    }
-}
-
-// Fungsi untuk menghapus baris teks pada posisi tertentu
-void deleteLine(List &L, int lineNumber) {
-    if (L.first == nullptr) {
-        // Jika list kosong
-        return;
-    }
-
-    address current = L.first;
-    int count = 1;
-
-    // Navigasi ke baris tertentu
-    while (current != nullptr && count < lineNumber) {
-        current = current->next;
-        count++;
-    }
-
-    if (current == nullptr) {
-        // Jika baris tidak ditemukan
-        return;
-    }
-
-    if (current->prev != nullptr) {
-        current->prev->next = current->next;
-    } else {
-        L.first = current->next;
-    }
-
-    if (current->next != nullptr) {
-        current->next->prev = current->prev;
-    } else {
-        L.last = current->prev;
-    }
-
-    delete current;
-}
-
-// Fungsi untuk menampilkan teks
-void tampilkanTeks(List L) {
-    address current = L.first;
-    while (current != nullptr) {
-        cout << current->info << endl;
-        current = current->next;
-    }
-}
-
-// Fungsi untuk membuat stack kosong
-void createStack(Stack &S) {
-    S.top = nullptr;
-}
-
-// Fungsi untuk menambahkan elemen ke stack
-void pushStack(Stack &S, string action, string data, int lineNumber) {
-    addressStack newElm = new elmStack;
-    newElm->action = action;
-    newElm->data = data;
-    newElm->lineNumber = lineNumber;
-    newElm->next = S.top;
-    S.top = newElm;
-}
-
-// Fungsi untuk mengambil elemen dari stack
-bool popStack(Stack &S, string &action, string &data, int &lineNumber) {
-    if (S.top == nullptr) {
-        return false;
-    }
-
-    addressStack temp = S.top;
-    action = temp->action;
-    data = temp->data;
-    lineNumber = temp->lineNumber;
-    S.top = temp->next;
-
-    delete temp;
-    return true;
-}
-
-// Fungsi untuk mengecek apakah stack kosong
-bool isStackEmpty(Stack S) {
-    return S.top == nullptr;
-}
-
-// Fungsi untuk membuat queue kosong
-void createQueue(Queue &Q) {
-    Q.head = nullptr;
-    Q.tail = nullptr;
-}
-
-// Fungsi untuk menambahkan data ke clipboard (queue)
-void enqueueClipboard(Queue &Q, string data) {
-    addressQueue newElm = new elmQueue;
-    newElm->clipboardData = data;
-    newElm->next = nullptr;
-
-    if (Q.head == nullptr) {
-        Q.head = newElm;
-        Q.tail = newElm;
-    } else {
-        Q.tail->next = newElm;
-        Q.tail = newElm;
-    }
-}
-
-// Fungsi untuk mengambil data dari clipboard (queue)
-bool dequeueClipboard(Queue &Q, string &data) {
-    if (Q.head == nullptr) {
-        return false;
-    }
-
-    addressQueue temp = Q.head;
-    data = temp->clipboardData;
-    Q.head = Q.head->next;
-
-    if (Q.head == nullptr) {
-        Q.tail = nullptr;
-    }
-
-    delete temp;
-    return true;
-}
-
-// Fungsi untuk mengecek apakah queue kosong
-bool isQueueEmpty(Queue Q) {
-    return Q.head == nullptr;
-}
-
-// Fungsi untuk mengosongkan redo stack
-void clearRedo(Stack &redoStack) {
-    string action, data;
-    int lineNumber;
-
-    while (!isStackEmpty(redoStack)) {
-        popStack(redoStack, action, data, lineNumber);
-    }
-}
-
-// Fungsi untuk menghapus baris dengan menyimpan undo
-void deleteLineWithUndo(List &L, Stack &undoStack, int lineNumber) {
-    address current = L.first;
-    int count = 1;
-
-    while (current != nullptr && count < lineNumber) {
-        current = current->next;
-        count++;
-    }
-
-    if (current == nullptr) {
-        cout << "Baris tidak ditemukan.\n";
-        return;
-    }
-
-    string text = current->info;
-    pushStack(undoStack, "DELETE", text, lineNumber);
-    deleteLine(L, lineNumber);
-}
-
-// Fungsi untuk melakukan undo
-void undo(List &L, Stack &undoStack, Stack &redoStack) {
-    if (isStackEmpty(undoStack)) {
-        cout << "Tidak ada aksi untuk di-undo.\n";
-        return;
-    }
-
-    string action, data;
-    int lineNumber;
-    popStack(undoStack, action, data, lineNumber);
-
-    if (action == "INSERT") {
-        deleteLine(L, lineNumber);
-        pushStack(redoStack, "INSERT", data, lineNumber);
-    } else if (action == "DELETE") {
-        insertLine(L, data, lineNumber);
-        pushStack(redoStack, "DELETE", data, lineNumber);
-    }
-    cout << "Undo berhasil.\n";
-}
-
-// Fungsi untuk melakukan redo
-void redo(List &L, Stack &redoStack, Stack &undoStack) {
-    if (isStackEmpty(redoStack)) {
-        cout << "Tidak ada aksi untuk di-redo.\n";
-        return;
-    }
-
-    string action, data;
-    int lineNumber;
-    popStack(redoStack, action, data, lineNumber);
-
-    if (action == "INSERT") {
-        insertLine(L, data, lineNumber);
-        pushStack(undoStack, "INSERT", data, lineNumber);
-    } else if (action == "DELETE") {
-        deleteLine(L, lineNumber);
-        pushStack(undoStack, "DELETE", data, lineNumber);
-    }
-    cout << "Redo berhasil.\n";
-}
-
-// Fungsi untuk menyalin baris ke clipboard
-void copyLine(List &L, Queue &clipboardQueue, int lineNumber) {
-    address current = L.first;
-    int count = 1;
-
-    while (current != nullptr && count < lineNumber) {
-        current = current->next;
-        count++;
-    }
-
-    if (current == nullptr) {
-        cout << "Baris tidak ditemukan untuk disalin.\n";
-        return;
-    }
-
-    enqueueClipboard(clipboardQueue, current->info);
-    cout << "Teks \"" << current->info << "\" telah disalin.\n";
-}
-
-// Fungsi untuk menempelkan teks dari clipboard ke baris tertentu
-void pasteLine(List &L, Queue &clipboardQueue, int lineNumber) {
-    string clipboardData;
-    if (!dequeueClipboard(clipboardQueue, clipboardData)) {
-        cout << "Clipboard kosong, tidak ada teks untuk ditempel.\n";
-        return;
-    }
-
-    insertLine(L, clipboardData, lineNumber);
-    cout << "Teks \"" << clipboardData << "\" telah ditempel di baris " << lineNumber << ".\n";
-}
-
-void activateCursor(List &L, const string &position) {
-    if (L.first == nullptr) {
-        cout << "List kosong, kursor tidak dapat diaktifkan.\n";
-        return;
-    }
-
-    if (position == "start") {
-        L.cursor = L.first; // Aktifkan kursor di elemen pertama
-        cout << "Kursor diaktifkan di awal list.\n";
-    } else if (position == "end") {
-        L.cursor = L.last; // Aktifkan kursor di elemen terakhir
-        cout << "Kursor diaktifkan di akhir list.\n";
-    } else {
-        cout << "Posisi tidak valid. Gunakan 'start' atau 'end'.\n";
-    }
-}
-
-void insertCharacter(List &L, char c) {
-    address newElm = createElement(string(1, c)); // Buat elemen untuk karakter baru
-
-    if (L.first == nullptr) {
-        // Jika list kosong
-        L.first = newElm;
-        L.last = newElm;
-        L.cursor = newElm;
-    } else if (L.cursor == nullptr) {
-        // Jika kursor belum diatur, tambahkan di awal
-        newElm->next = L.first;
-        L.first->prev = newElm;
-        L.first = newElm;
-        L.cursor = newElm;
-    } else {
-        // Sisipkan setelah kursor
-        newElm->next = L.cursor->next;
-        newElm->prev = L.cursor;
-
-        if (L.cursor->next != nullptr) {
-            L.cursor->next->prev = newElm;
-        } else {
-            L.last = newElm; // Jika di akhir, atur last
+            temp->next = newChar;
         }
 
-        L.cursor->next = newElm;
-        L.cursor = newElm; // Pindahkan kursor ke elemen baru
+        // Menyimpan karakter yang baru ditambahkan ke dalam undo stack
+        file->undoRedo.undoStack.push(character);
+
+        // Reset redo queue jika ada operasi baru setelah undo
+        while (!file->undoRedo.redoQueue.empty()) {
+            file->undoRedo.redoQueue.pop();
+        }
+
+        // Update posisi kursor ke akhir file
+        file->cursorPosition++;
     }
 }
 
-void deleteCharacterAtCursor(List &L) {
-    if (L.cursor == nullptr) {
-        cout << "Tidak ada karakter untuk dihapus.\n";
+// Menampilkan semua file yang ada
+void displayFiles(const TextEditor &editor) {
+    FileNode* temp = editor.files;
+    if (temp == nullptr) {
+        cout << "Tidak ada file untuk ditampilkan.\n";
         return;
     }
 
-    address target = L.cursor;
+    int index = 1;
+    while (temp != nullptr) {
+        cout << index << ". " << temp->fileName << "\n";
+        temp = temp->next;
+        index++;
+    }
+}
 
-    if (target->prev != nullptr) {
-        target->prev->next = target->next;
-    } else {
-        L.first = target->next;
+// Mencari file berdasarkan nama
+FileNode* findFile(TextEditor &editor, const string &fileName) {
+    FileNode* temp = editor.files;
+    while (temp != nullptr) {
+        if (temp->fileName == fileName) {
+            return temp;
+        }
+        temp = temp->next;
+    }
+    return nullptr;
+}
+
+// Mendapatkan file berdasarkan indeks
+FileNode* getFileByIndex(TextEditor &editor, int index) {
+    FileNode* temp = editor.files;
+    int currentIndex = 1;
+    while (temp != nullptr && currentIndex < index) {
+        temp = temp->next;
+        currentIndex++;
+    }
+    return temp;
+}
+
+// Fungsi untuk pindah kursor ke kanan
+void moveCursorRight(FileNode* selectedFile) {
+    CharNode* temp = selectedFile->head;
+    int currentPosition = 0;
+
+    // Menelusuri linked list untuk mencapai posisi kursor saat ini
+    while (temp != nullptr && currentPosition < selectedFile->cursorPosition) {
+        temp = temp->next;
+        currentPosition++;
     }
 
-    if (target->next != nullptr) {
-        target->next->prev = target->prev;
+    // Pindah kursor ke kanan jika memungkinkan
+    if (temp != nullptr && temp->next != nullptr) {
+        selectedFile->cursorPosition++;
+        cout << "Kursor dipindahkan ke kanan.\n";
     } else {
-        L.last = target->prev;
+        cout << "Kursor sudah di posisi paling kanan.\n";
     }
 
-    L.cursor = target->next ? target->next : target->prev;
-    delete target;
+    // Tampilkan teks dengan kursor setelah berpindah
+    displayFileContent(selectedFile);
+}
+
+
+// Fungsi untuk pindah kursor ke kiri
+void moveCursorLeft(FileNode* selectedFile) {
+    if (selectedFile->cursorPosition == 0) {
+        cout << "Kursor sudah di posisi paling kiri.\n";
+        return;
+    }
+
+    selectedFile->cursorPosition--;
+    cout << "Kursor dipindahkan ke kiri.\n";
+
+    // Tampilkan teks dengan kursor setelah berpindah
+    displayFileContent(selectedFile);
+}
+
+
+// Menghapus karakter di posisi kursor
+void deleteCharacterAtCursor(FileNode* selectedFile) {
+    if (selectedFile->head == nullptr) {
+        cout << "File kosong. Tidak ada karakter untuk dihapus.\n";
+        return;
+    }
+
+    CharNode* temp = selectedFile->head;
+    CharNode* prev = nullptr;
+    int currentPosition = 0;
+
+    // Menelusuri linked list untuk mencapai posisi kursor
+    while (temp != nullptr && currentPosition < selectedFile->cursorPosition) {
+        prev = temp;
+        temp = temp->next;
+        currentPosition++;
+    }
+
+    // Jika kursor berada di luar batas atau tidak ada karakter yang cocok
+    if (temp == nullptr) {
+        cout << "Tidak ada karakter di posisi kursor.\n";
+        return;
+    }
+
+    // Menghapus node di posisi kursor
+    if (prev == nullptr) {
+        // Menghapus karakter pertama
+        selectedFile->head = temp->next;
+    } else {
+        // Menghapus karakter di posisi lainnya
+        prev->next = temp->next;
+    }
+
+    // Bebaskan memori
+    delete temp;
+
+    // Update posisi kursor (tetap di posisi yang sama, jika memungkinkan)
+    if (selectedFile->cursorPosition > 0) {
+        selectedFile->cursorPosition--;
+    }
 
     cout << "Karakter berhasil dihapus.\n";
 }
 
-void moveCursor(List &L, const string &direction) {
-    if (L.first == nullptr) {
-        cout << "Teks kosong, kursor tidak bisa dipindahkan.\n";
+// Menambahkan teks ke file tertentu
+void addTextToFile(TextEditor &editor, FileNode* selectedFile) {
+    cout << "Masukkan paragraf (akhiri dengan ENTER dua kali):\n";
+
+    string paragraph, line;
+    bool firstEmptyLine = false;
+
+    while (true) {
+        getline(cin, line);
+
+        // Jika pengguna menekan Enter tanpa teks
+        if (line.empty()) {
+            if (firstEmptyLine) {
+                // Jika ini adalah Enter kedua, keluar dari loop
+                break;
+            }
+            // Tandai bahwa ini adalah Enter pertama
+            firstEmptyLine = true;
+        } else {
+            // Jika input bukan kosong, tambahkan ke paragraf
+            firstEmptyLine = false; // Reset jika ada teks setelah Enter pertama
+            paragraph += line + '\n'; // Tambahkan teks dan newline
+        }
+    }
+
+    // Hapus newline terakhir di paragraf (karena Enter kedua tidak diinginkan)
+    if (!paragraph.empty() && paragraph.back() == '\n') {
+        paragraph.pop_back(); // Menghapus newline terakhir
+    }
+
+    // Menambahkan karakter satu per satu ke file
+    for (size_t i = 0; i < paragraph.length(); ++i) {
+        addCharacterToFile(editor, selectedFile->fileName, paragraph[i]);
+    }
+
+    // Pindahkan kursor ke akhir file setelah menambahkan teks
+    CharNode* temp = selectedFile->head;
+    int currentPosition = 0;
+    while (temp != nullptr) {
+        temp = temp->next;
+        currentPosition++;
+    }
+
+    // Setel posisi kursor ke posisi akhir
+    selectedFile->cursorPosition = currentPosition;
+
+    // Pindahkan kursor ke kiri satu kali (jika memungkinkan)
+    if (selectedFile->cursorPosition > 0) {
+        selectedFile->cursorPosition--;
+    }
+
+    cout << "Paragraf berhasil ditambahkan ke file \"" << selectedFile->fileName << "\".\n";
+    cout << "Kursor dipindahkan ke kiri satu kali.\n";
+}
+
+// Menampilkan isi file tertentu dengan tampilan kursor menyatu dengan teks
+void displayFileContent(FileNode* selectedFile) {
+    if (selectedFile->head == nullptr) {
+        cout << "File kosong.\n";
         return;
     }
 
-    if (direction == "r") {
-        if (L.cursor != nullptr && L.cursor->next != nullptr) {
-            L.cursor = L.cursor->next;
+    CharNode* temp = selectedFile->head;
+    int currentPosition = 0;
+
+    cout << "Isi file:\n";
+
+    // Menampilkan isi file dengan kursor menyatu di dalam teks
+    while (temp != nullptr) {
+        if (currentPosition == selectedFile->cursorPosition) {
+            // Jika kursor berada di posisi ini, tampilkan karakter dengan tanda kurung
+            cout << "(" << temp->character << ")";
         } else {
-            cout << "Kursor sudah di posisi paling kanan.\n";
+            // Jika bukan posisi kursor, tampilkan karakter biasa
+            cout << temp->character;
         }
-    } else if (direction == "l") {
-        if (L.cursor != nullptr && L.cursor->prev != nullptr) {
-            L.cursor = L.cursor->prev;
+        temp = temp->next;
+        currentPosition++;
+    }
+
+    // Jika kursor berada setelah karakter terakhir
+    if (currentPosition == selectedFile->cursorPosition) {
+        cout << "()"; // Tampilkan tanda kursor di akhir teks
+    }
+
+    cout << "\n";
+}
+
+// Menyisipkan teks setelah posisi kursor
+void insertTextAfterCursor(FileNode* selectedFile) {
+    if (selectedFile->head == nullptr) {
+        cout << "File kosong. Tidak ada tempat untuk menyisipkan teks.\n";
+        return;
+    }
+
+    cout << "Masukkan teks untuk disisipkan setelah posisi kursor:\n";
+    string textToInsert;
+    getline(cin, textToInsert);
+
+    CharNode* temp = selectedFile->head;
+    int currentPosition = 0;
+
+    // Menelusuri linked list hingga posisi kursor
+    while (temp != nullptr && currentPosition < selectedFile->cursorPosition) {
+        temp = temp->next;
+        currentPosition++;
+    }
+
+    // Menambahkan setiap karakter dalam teks ke linked list
+    CharNode* lastInsertedNode = temp;
+    for (int i = 0; i < textToInsert.length(); i++) {
+        char c = textToInsert[i];
+        CharNode* newChar = new CharNode;
+        newChar->character = c;
+
+         // Menyisipkan setelah node saat ini
+        newChar->next = lastInsertedNode->next;
+        lastInsertedNode->next = newChar;
+
+        lastInsertedNode = newChar; // Pindahkan ke node baru
+    }
+
+
+    // Perbarui posisi kursor setelah teks yang disisipkan
+    selectedFile->cursorPosition += textToInsert.length();
+
+    cout << "Teks berhasil disisipkan.\n";
+
+    // Tampilkan isi file dengan kursor
+    displayFileContent(selectedFile);
+}
+
+// select text
+void selectText(FileNode* selectedFile, int startPos, int endPos) {
+    if (selectedFile == nullptr || startPos < 0 || endPos < startPos) {
+        cout << "Posisi yang dimasukkan tidak valid.\n";
+        return;
+    }
+
+    // Memastikan posisi akhir tidak lebih dari panjang file
+    int fileLength = 0;
+    CharNode* temp = selectedFile->head;
+    while (temp != nullptr) {
+        fileLength++;
+        temp = temp->next;
+    }
+
+    if (endPos >= fileLength) {
+        cout << "Posisi akhir melebihi panjang file. Maksimal posisi akhir: " << fileLength - 1 << endl;
+        return;
+    }
+
+    // Mulai menelusuri karakter dari posisi awal
+    temp = selectedFile->head;
+    int currentPosition = 0;
+    string selectedText;
+
+    // Menemukan posisi awal
+    while (temp != nullptr && currentPosition < startPos) {
+        temp = temp->next;
+        currentPosition++;
+    }
+
+    // Menyusun teks yang dipilih dari startPos hingga endPos
+    while (temp != nullptr && currentPosition <= endPos) {
+        selectedText += temp->character;
+        temp = temp->next;
+        currentPosition++;
+    }
+
+    // Menyimpan teks yang dipilih ke clipboard
+    selectedFile->clipboard = selectedText;
+    cout << "Teks berhasil dipilih: \"" << selectedText << "\"\n";
+}
+
+
+// copy text
+void copyText(FileNode* selectedFile) {
+    if (selectedFile->clipboard.empty()) {
+        cout << "Tidak ada teks yang dipilih untuk disalin.\n";
+        return;
+    }
+
+    // Teks yang disalin sudah ada di clipboard
+    cout << "Teks berhasil disalin ke clipboard: \"" << selectedFile->clipboard << "\"\n";
+}
+
+// Fungsi untuk menempelkan teks dari clipboard setelah posisi kursor dengan spasi setelah kursor
+void pasteText(FileNode* selectedFile) {
+    // Memastikan clipboard tidak kosong
+    if (selectedFile->clipboard.empty()) {
+        cout << "Tidak ada teks yang dapat ditempelkan. Clipboard kosong.\n";
+        return;
+    }
+
+    // Teks yang akan dipaste adalah teks yang ada di clipboard
+    string textToPaste = selectedFile->clipboard;
+
+    // Menambahkan spasi setelah posisi kursor untuk memberikan jarak sebelum menempelkan teks
+    CharNode* temp = selectedFile->head;
+    int currentPosition = 0;
+
+    // Menelusuri file hingga mencapai posisi kursor
+    while (temp != nullptr && currentPosition < selectedFile->cursorPosition) {
+        temp = temp->next;
+        currentPosition++;
+    }
+
+    // Jika posisi kursor valid, sisipkan spasi setelah posisi kursor terlebih dahulu
+    CharNode* lastInsertedNode = temp;  // Node sebelum posisi kursor
+
+    // Menyisipkan spasi pertama setelah kursor
+    CharNode* newSpace = new CharNode;
+    newSpace->character = ' ';  // Spasi
+    newSpace->next = lastInsertedNode->next;
+    lastInsertedNode->next = newSpace;
+    lastInsertedNode = newSpace;  // Update lastInsertedNode ke spasi yang baru disisipkan
+
+    // Menyisipkan setiap karakter dalam teks dari clipboard
+    for (int i = 0; i < textToPaste.length(); i++) {
+        char c = textToPaste[i];
+        CharNode* newChar = new CharNode;
+        newChar->character = c;
+        newChar->next = lastInsertedNode->next;
+        lastInsertedNode->next = newChar;
+        lastInsertedNode = newChar;  // Update lastInsertedNode ke node baru
+    }
+
+    // Update posisi kursor setelah teks yang dipaste
+    selectedFile->cursorPosition++;  // Posisi kursor setelah spasi yang baru disisipkan
+    selectedFile->cursorPosition += textToPaste.length();  // Update kursor setelah teks yang dipaste
+    cout << "Teks berhasil ditempelkan.\n";
+
+    // Tampilkan file dengan kursor setelah operasi paste
+    displayFileContent(selectedFile);
+}
+// Fungsi untuk memotong teks
+void cutText(FileNode* selectedFile, int startPos, int endPos) {
+    if (selectedFile == nullptr || startPos < 0 || endPos < startPos) {
+        cout << "Posisi yang dimasukkan tidak valid.\n";
+        return;
+    }
+
+    // Memastikan posisi akhir tidak lebih dari panjang file
+    int fileLength = 0;
+    CharNode* temp = selectedFile->head;
+    while (temp != nullptr) {
+        fileLength++;
+        temp = temp->next;
+    }
+
+    if (endPos >= fileLength) {
+        cout << "Posisi akhir melebihi panjang file. Maksimal posisi akhir: " << fileLength - 1 << endl;
+        return;
+    }
+
+    // Mulai menelusuri karakter dari posisi awal
+    temp = selectedFile->head;
+    int currentPosition = 0;
+    string cutText;
+
+    // Menemukan posisi awal
+    while (temp != nullptr && currentPosition < startPos) {
+        temp = temp->next;
+        currentPosition++;
+    }
+
+    // Menyusun teks yang dipilih dari startPos hingga endPos
+    while (temp != nullptr && currentPosition <= endPos) {
+        cutText += temp->character;
+        selectedFile->cutBuffer.push(temp->character);  // Push ke stack cutBuffer
+        temp = temp->next;
+        currentPosition++;
+    }
+
+    // Menyimpan teks yang dipilih ke clipboard (cutBuffer sudah berisi teks yang dipotong)
+    cout << "Teks berhasil dipotong: \"" << cutText << "\"\n";
+
+    // Hapus teks yang dipilih dari dokumen
+    deleteTextInRange(selectedFile, startPos, endPos);
+
+    // Perbarui posisi kursor setelah teks dipotong
+    if (startPos <= selectedFile->cursorPosition) {
+        // Jika kursor berada sebelum atau tepat pada teks yang dipotong,
+        // kita harus mengurangi posisi kursor setelah penghapusan teks
+        selectedFile->cursorPosition = (selectedFile->cursorPosition >= endPos)
+            ? selectedFile->cursorPosition - (endPos - startPos + 1) // Geser kursor mundur
+            : startPos;  // Jika kursor berada di posisi setelah teks yang dipotong, tetap pada posisi startPos
+    }
+
+    cout << "Posisi kursor telah diperbarui: " << selectedFile->cursorPosition << endl;
+}
+// Fungsi untuk menghapus teks dalam rentang posisi (startPos - endPos)
+void deleteTextInRange(FileNode* selectedFile, int startPos, int endPos) {
+    if (selectedFile->head == nullptr) {
+        cout << "File kosong. Tidak ada teks untuk dihapus.\n";
+        return;
+    }
+
+    CharNode* temp = selectedFile->head;
+    CharNode* prev = nullptr;
+    int currentPosition = 0;
+
+    // Menelusuri hingga posisi awal
+    while (temp != nullptr && currentPosition < startPos) {
+        prev = temp;
+        temp = temp->next;
+        currentPosition++;
+    }
+
+    // Hapus karakter dari startPos hingga endPos
+    while (temp != nullptr && currentPosition <= endPos) {
+        CharNode* toDelete = temp;
+        if (prev == nullptr) {
+            // Hapus karakter pertama
+            selectedFile->head = temp->next;
         } else {
-            cout << "Kursor sudah di posisi paling kiri.\n";
+            // Hapus karakter berikutnya
+            prev->next = temp->next;
         }
+        temp = temp->next;
+        delete toDelete;  // Bebaskan memori
+        currentPosition++;
+    }
+
+    cout << "Teks berhasil dihapus dari file.\n";
+}
+
+// Fungsi untuk menempelkan teks dari cutBuffer setelah posisi kursor
+void pasteCutText(FileNode* selectedFile) {
+    if (selectedFile->cutBuffer.empty()) {
+        cout << "Tidak ada teks yang dipotong untuk ditempelkan.\n";
+        return;
+    }
+
+    // Mengambil teks yang dipotong dari cutBuffer
+    string textToPaste;
+    while (!selectedFile->cutBuffer.empty()) {
+        textToPaste = selectedFile->cutBuffer.top() + textToPaste;  // Membalik urutan stack
+        selectedFile->cutBuffer.pop();
+    }
+
+    // Menambahkan spasi setelah posisi kursor untuk memberikan jarak sebelum menempelkan teks
+    CharNode* temp = selectedFile->head;
+    int currentPosition = 0;
+
+    // Menelusuri file hingga mencapai posisi kursor
+    while (temp != nullptr && currentPosition < selectedFile->cursorPosition) {
+        temp = temp->next;
+        currentPosition++;
+    }
+
+    // Menyisipkan spasi pertama setelah kursor terlebih dahulu
+    CharNode* lastInsertedNode = temp;  // Node sebelum posisi kursor
+
+    // Menyisipkan setiap karakter dalam teks dari cutBuffer
+    for (int i = 0; i < textToPaste.length(); i++) {
+        char c = textToPaste[i];
+        CharNode* newChar = new CharNode;
+        newChar->character = c;
+        newChar->next = lastInsertedNode->next;
+        lastInsertedNode->next = newChar;
+        lastInsertedNode = newChar;  // Update lastInsertedNode ke node baru
+    }
+
+    // Update posisi kursor setelah teks yang dipaste
+    selectedFile->cursorPosition += textToPaste.length();
+    cout << "Teks berhasil ditempelkan.\n";
+
+    // Tampilkan file dengan kursor setelah operasi paste
+    displayFileContent(selectedFile);
+}
+
+// Fungsi untuk mencari teks dalam file mulai dari posisi tertentu
+int findText(FileNode* selectedFile, const std::string& searchText, int startPos) {
+    if (selectedFile == nullptr || searchText.empty()) {
+        std::cout << "File tidak ditemukan atau teks pencarian kosong.\n";
+        return -1;  // Tidak ditemukan
+    }
+
+    CharNode* temp = selectedFile->head;
+    int currentPos = 0;
+
+    // Menelusuri hingga mencapai posisi awal
+    while (temp != nullptr && currentPos < startPos) {
+        temp = temp->next;
+        currentPos++;
+    }
+
+    // Buffer untuk mencocokkan kata
+    std::string buffer;
+    CharNode* matchStart = temp;
+
+    // Menelusuri dokumen untuk mencari kata
+    while (temp != nullptr) {
+        buffer += temp->character;
+
+        // Jika panjang buffer sama dengan panjang teks pencarian
+        if (buffer.size() == searchText.size()) {
+            if (buffer == searchText) {
+                return currentPos - searchText.size() + 1;  // Posisi awal kata ditemukan
+            }
+
+            // Geser buffer ke depan (hapus karakter pertama)
+            buffer.erase(0, 1);
+            matchStart = matchStart->next;
+        }
+
+        temp = temp->next;
+        currentPos++;
+    }
+
+    std::cout << "Teks tidak ditemukan.\n";
+    return -1;  // Tidak ditemukan
+}
+
+// Fungsi untuk mengganti teks dalam file
+void replaceText(FileNode* selectedFile, const std::string& searchText, const std::string& replaceText, int startPos) {
+    if (selectedFile == nullptr || searchText.empty()) {
+        std::cout << "File tidak ditemukan atau teks pencarian kosong.\n";
+        return;
+    }
+
+    int pos = findText(selectedFile, searchText, startPos);
+    if (pos == -1) {
+        std::cout << "Teks tidak ditemukan, tidak ada yang diganti.\n";
+        return;
+    }
+
+    // Temukan posisi awal teks yang ditemukan
+    CharNode* temp = selectedFile->head;
+    CharNode* prev = nullptr;
+    int currentPos = 0;
+
+    while (temp != nullptr && currentPos < pos) {
+        prev = temp;
+        temp = temp->next;
+        currentPos++;
+    }
+
+    // Simpan panjang teks lama dan baru
+    int oldLength = searchText.size();
+    int newLength = replaceText.size();
+
+    // Periksa apakah posisi kursor berada di akhir dokumen sebelum penggantian
+    bool cursorAtEnd = (selectedFile->cursorPosition == currentPos + oldLength);
+
+    // Hapus teks lama
+    CharNode* matchStart = temp;
+    for (int i = 0; i < oldLength; ++i) {
+        if (temp != nullptr) {
+            CharNode* toDelete = temp;
+            temp = temp->next;
+            delete toDelete;
+        }
+    }
+
+    // Hubungkan ulang linked list
+    if (prev != nullptr) {
+        prev->next = temp; // Hubungkan node sebelum teks yang diganti dengan node setelahnya
     } else {
-        cout << "Perintah tidak valid. Gunakan 'r' atau 'l'.\n";
+        selectedFile->head = temp; // Jika teks yang diganti ada di awal file
+    }
+
+    // Sisipkan teks baru
+    CharNode* insertPos = prev;
+    for (int i = 0; i < replaceText.length(); i++) {
+        char c = replaceText[i];
+        CharNode* newChar = new CharNode;
+        newChar->character = c;
+        newChar->next = nullptr;
+
+        if (insertPos == nullptr) {
+            // Jika mengganti di awal file
+            newChar->next = selectedFile->head;
+            selectedFile->head = newChar;
+            insertPos = newChar;
+        } else {
+            // Sisipkan setelah posisi sebelumnya
+            newChar->next = insertPos->next;
+            insertPos->next = newChar;
+            insertPos = newChar;
+        }
+    }
+
+    // Perbarui posisi kursor
+    if (cursorAtEnd) {
+        // Jika kursor berada di akhir dokumen, set ulang ke posisi akhir dokumen baru
+        selectedFile->cursorPosition = pos + newLength;
+    } else if (selectedFile->cursorPosition > pos) {
+        // Jika kursor berada setelah teks yang diganti, sesuaikan posisi kursor
+        selectedFile->cursorPosition += (newLength - oldLength);
+    }
+
+    cout << "Teks berhasil diganti.\n";
+}
+
+//procedure melakukan undo
+void undo(FileNode* selectedFile) {
+    if (!selectedFile->undoRedo.undoStack.empty()) {
+        // Ambil karakter terakhir dari undo stack
+        char lastChar = selectedFile->undoRedo.undoStack.top();
+        selectedFile->undoRedo.undoStack.pop();
+
+        // Simpan karakter yang di-undo ke redo queue
+        selectedFile->undoRedo.redoQueue.push(lastChar);
+
+        // Hapus karakter terakhir dari file
+        CharNode* current = selectedFile->head;
+        CharNode* prev = nullptr;
+        while (current && current->character != lastChar) {
+            prev = current;
+            current = current->next;
+        }
+
+        if (current) {
+            if (prev) {
+                prev->next = current->next;
+            } else {
+                selectedFile->head = current->next;
+            }
+            delete current;
+        }
+
+        // Update posisi kursor
+        selectedFile->cursorPosition--;
+    } else {
+        cout << "Tidak ada operasi untuk di-undo!" << endl;
     }
 }
 
-void displayCursorPosition(List L) {
-    if (L.cursor == nullptr) {
-        cout << "[Kursor tidak aktif]\n";
+// Fungsi untuk melakukan redo
+void redo(FileNode* selectedFile) {
+    if (!selectedFile->undoRedo.redoQueue.empty()) {
+        char lastChar = selectedFile->undoRedo.redoQueue.front();
+        selectedFile->undoRedo.redoQueue.pop();
+
+        // Tambahkan karakter ke file dengan versi ketiga
+        addCharacterToFile(*selectedFile, lastChar);
+
+        // Masukkan karakter ke undo stack
+        selectedFile->undoRedo.undoStack.push(lastChar);
+
+        // Update posisi kursor
+        selectedFile->cursorPosition++;
     } else {
-        cout << "[Kursor pada: \"" << L.cursor->info << "\"]\n";
+        cout << "Tidak ada operasi untuk di-redo!" << endl;
     }
+}
+
+// Fungsi untuk menambah karakter dan menyimpan operasi untuk undo
+void addCharacterToFile(FileNode &file, char character) {
+    // Tambahkan karakter ke dalam linked list
+    CharNode* newNode = new CharNode{character, nullptr};
+    if (file.head == nullptr) {
+        file.head = newNode;
+    } else {
+        CharNode* current = file.head;
+        while (current->next != nullptr) {
+            current = current->next;
+        }
+        current->next = newNode;
+    }
+
+    // Menyimpan perubahan ke dalam undo stack
+    file.undoRedo.undoStack.push(character);
+}
+
+// Menampilkan menu utama
+void displayMainMenu() {
+    cout << "\n=================== TEXT EDITOR ===================\n";
+    cout << "1. Tambahkan file baru\n";
+    cout << "2. Tampilkan semua file\n";
+    cout << "0. Keluar\n";
+    cout << "===================================================\n";
+    cout << "Pilih opsi: ";
+}
+
+// Menampilkan menu file
+void displayFileMenu() {
+    cout << "\n================= FILE MENU =================\n";
+    cout << "1. Tambahkan teks\n";
+    cout << "2. Tampilkan isi file\n";
+    cout << "3. Pindah kursor\n";
+    cout << "4. Hapus karakter di posisi kursor\n";
+    cout << "5. Sisipkan setelah posisi kursor\n";
+    cout << "6. Pilih teks\n";
+    cout << "7. Salin teks\n";
+    cout << "8. Tempelkan teks\n";
+    cout << "9. Potong teks\n";
+    cout << "10. Cari dan Ganti Teks\n";
+    cout << "11. Undo\n";
+    cout << "12. Redo\n";
+    cout << "0. Kembali ke menu utama\n";
+    cout << "=============================================\n";
+    cout << "Pilih opsi: ";
 }
