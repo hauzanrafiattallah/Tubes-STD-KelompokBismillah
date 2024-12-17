@@ -7,7 +7,6 @@ void createList(List &L) {
     L.cursor = nullptr; // Inisialisasi cursor
 }
 
-
 // Fungsi untuk membuat elemen baru pada list
 address createElement(string text) {
     address newElm = new elmList;
@@ -301,7 +300,6 @@ void activateCursor(List &L, const string &position) {
     }
 }
 
-
 void insertCharacter(List &L, char c) {
     address newElm = createElement(string(1, c)); // Buat elemen untuk karakter baru
 
@@ -331,7 +329,6 @@ void insertCharacter(List &L, char c) {
         L.cursor = newElm; // Pindahkan kursor ke elemen baru
     }
 }
-
 
 void deleteCharacterAtCursor(List &L) {
     if (L.cursor == nullptr) {

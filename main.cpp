@@ -24,18 +24,17 @@ int main() {
         cout << "\n--- Undo/Redo ---\n";
         cout << "5. Undo aksi terakhir\n";
         cout << "6. Redo aksi terakhir\n";
-        cout << "9. Hapus riwayat redo\n";
         
         cout << "\n--- Clipboard ---\n";
         cout << "7. Salin baris ke clipboard\n";
         cout << "8. Tempel teks dari clipboard ke baris tertentu\n";
         
         cout << "\n--- Kursor ---\n";
-        cout << "10. Tambah karakter di posisi kursor\n";
-        cout << "11. Hapus karakter di posisi kursor\n";
-        cout << "12. Gerakkan kursor (kiri/kanan)\n";
-        cout << "13. Tampilkan posisi kursor\n";
-        cout << "14. Aktifkan kursor\n";
+        cout << "9. Tambah karakter di posisi kursor\n";
+        cout << "10. Hapus karakter di posisi kursor\n";
+        cout << "11. Gerakkan kursor (kiri/kanan)\n";
+        cout << "12. Tampilkan posisi kursor\n";
+        cout << "13. Aktifkan kursor\n";
         
         cout << "\n--- Keluar ---\n";
         cout << "0. Keluar\n";
@@ -93,11 +92,7 @@ int main() {
                 cout << "Teks berhasil ditempelkan pada baris " << lineNumber << ".\n";
                 break;
             }
-            case 9:
-                clearRedo(redoStack);  // Menghapus redo stack
-                cout << "Riwayat redo berhasil dikosongkan.\n";
-                break;
-            case 10: {
+            case 9: {
                 char karakter;
                 cout << "Masukkan karakter untuk ditambahkan di posisi kursor: ";
                 cin >> karakter;
@@ -105,11 +100,11 @@ int main() {
                 cout << "Karakter '" << karakter << "' berhasil ditambahkan.\n";
                 break;
             }
-            case 11:
+            case 10:
                 deleteCharacterAtCursor(editor);  // Menghapus karakter pada posisi kursor
                 cout << "Karakter di posisi kursor berhasil dihapus.\n";
                 break;
-            case 12: {
+            case 11: {
                 string direction;
                 cout << "Masukkan arah gerakan kursor ('k' untuk kiri, 'r' untuk kanan): ";
                 cin >> direction;
@@ -121,10 +116,10 @@ int main() {
                 }
                 break;
             }
-            case 13:
+            case 12:
                 displayCursorPosition(editor);  // Menampilkan posisi kursor
                 break;
-            case 14: {
+            case 13: {
                 string position;
                 cout << "Pilih posisi kursor ('start' untuk awal, 'end' untuk akhir): ";
                 cin >> position;
