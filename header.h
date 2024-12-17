@@ -86,13 +86,11 @@ void addCharacterToFile(FileNode &file, char character);
 void displayMainMenu();
 void displayFileMenu();
 
-// Fungsi dan prosedur untuk stack (CharStack)
+// Fungsi dan prosedur primitive untuk stack dan queue
 void createStack(CharStack &stack);
 bool isStackEmpty(CharStack &stack);
 void push(CharStack &stack, char value);
 char pop(CharStack &stack);
-
-// Fungsi dan prosedur untuk queue (CharQueue)
 void createQueue(CharQueue &queue);
 bool isQueueEmpty(CharQueue &queue);
 void enqueue(CharQueue &queue, char value);
