@@ -14,11 +14,23 @@ struct CharNode
     char character; // Karakter yang disimpan
     CharNode *next; // Pointer ke node karakter berikutnya
 };
+// Struktur untuk stack (menggunakan linked list)
+struct CharStack
+{
+    CharNode *top; // Pointer ke node paling atas
+};
+
+// Struktur untuk queue (menggunakan linked list)
+struct CharQueue
+{
+    CharNode *front; // Pointer ke node paling depan
+    CharNode *rear;  // Pointer ke node paling belakang
+};
 
 struct UndoRedoStack
 {
-    stack<char> undoStack; // Stack untuk undo
-    queue<char> redoQueue; // Queue untuk redo
+    CharStack undoStack; // Stack untuk undo
+    CharQueue redoQueue; // Queue untuk redo
 };
 
 // Struktur Node untuk file (linked list file)
@@ -29,7 +41,7 @@ struct FileNode
     FileNode *next;         // Pointer ke file berikutnya
     int cursorPosition;     // Posisi kursor dalam file
     string clipboard;       // Menyimpan teks yang disalin
-    stack<char> cutBuffer;  // Stack untuk menyimpan teks yang dipotong
+    CharStack cutBuffer;    // Stack untuk menyimpan teks yang dipotong
     UndoRedoStack undoRedo; // Stack undo dan queue redo untuk file ini
 };
 
@@ -76,5 +88,17 @@ void addCharacterToFile(FileNode &file, char character);
 // Fungsi menu
 void displayMainMenu();
 void displayFileMenu();
+
+// Fungsi dan prosedur untuk stack (CharStack)
+void initializeStack(CharStack &stack);
+bool isStackEmpty(const CharStack &stack);
+void push(CharStack &stack, char value);
+char pop(CharStack &stack);
+
+// Fungsi dan prosedur untuk queue (CharQueue)
+void initializeQueue(CharQueue &queue);
+bool isQueueEmpty(const CharQueue &queue);
+void enqueue(CharQueue &queue, char value);
+char dequeue(CharQueue &queue);
 
 #endif

@@ -1,5 +1,102 @@
 #include "header.h"
 
+// Fungsi untuk inisialisasi stack
+void initializeStack(CharStack &stack)
+{
+    stack.top = nullptr; // Stack kosong
+}
+
+// Fungsi untuk memeriksa apakah stack kosong
+bool isStackEmpty(const CharStack &stack)
+{
+    return stack.top == nullptr;
+}
+
+// Fungsi untuk menambahkan elemen ke stack (push)
+void push(CharStack &stack, char value)
+{
+    CharNode *newNode = new CharNode;
+    newNode->character = value;
+    newNode->next = stack.top; // Node baru menunjuk ke top lama
+    stack.top = newNode;       // Update top menjadi node baru
+}
+
+// Fungsi untuk menghapus elemen dari stack (pop)
+char pop(CharStack &stack)
+{
+    if (isStackEmpty(stack))
+    {
+        cout << "Stack kosong!\n";
+        return '\0'; // Return karakter kosong jika stack kosong
+    }
+    else
+    {
+        CharNode *temp = stack.top;
+        char value = temp->character;
+        stack.top = stack.top->next; // Update top ke node berikutnya
+        delete temp;                 // Hapus node lama
+        return value;
+    }
+}
+char top(CharStack &stack)
+{
+    if (stack.top != nullptr)
+    {
+        return stack.top->character; // Mengambil karakter dari node teratas
+    }
+    return '\0'; // Jika stack kosong, return karakter kosong
+}
+
+// Fungsi untuk inisialisasi queue
+void initializeQueue(CharQueue &queue)
+{
+    queue.front = queue.rear = nullptr; // Queue kosong
+}
+
+// Fungsi untuk memeriksa apakah queue kosong
+bool isQueueEmpty(const CharQueue &queue)
+{
+    return queue.front == nullptr;
+}
+
+// Fungsi untuk menambahkan elemen ke queue (enqueue)
+void enqueue(CharQueue &queue, char value)
+{
+    CharNode *newNode = new CharNode;
+    newNode->character = value;
+    newNode->next = nullptr;
+
+    if (isQueueEmpty(queue))
+    {
+        queue.front = queue.rear = newNode; // Queue kosong, front dan rear menunjuk ke node baru
+    }
+    else
+    {
+        queue.rear->next = newNode; // Rear lama menunjuk ke node baru
+        queue.rear = newNode;       // Update rear ke node baru
+    }
+}
+
+// Fungsi untuk menghapus elemen dari queue (dequeue)
+char dequeue(CharQueue &queue)
+{
+    if (isQueueEmpty(queue))
+    {
+        cout << "Queue kosong!\n";
+        return '\0'; // Return karakter kosong jika queue kosong
+    }
+    else
+    {
+        CharNode *temp = queue.front;
+        char value = temp->character;
+        queue.front = queue.front->next; // Update front ke node berikutnya
+        if (queue.front == nullptr)      // Jika queue kosong setelah dequeue
+            queue.rear = nullptr;
+        delete temp; // Hapus node lama
+        return value;
+    }
+}
+
 // Inisialisasi editor teks
 void initializeEditor(TextEditor &editor)
 {
@@ -77,12 +174,12 @@ void addCharacterToFile(TextEditor &editor, string &fileName, char character)
         }
 
         // Menyimpan karakter yang baru ditambahkan ke dalam undo stack
-        file->undoRedo.undoStack.push(character);
+        push(file->undoRedo.undoStack, character);
 
         // Reset redo queue jika ada operasi baru setelah undo
-        while (!file->undoRedo.redoQueue.empty())
+        while (!isQueueEmpty(file->undoRedo.redoQueue))
         {
-            file->undoRedo.redoQueue.pop();
+            dequeue(file->undoRedo.redoQueue); // Menggunakan dequeue untuk mengosongkan redoQueue
         }
 
         // Update posisi kursor ke akhir file
@@ -540,7 +637,8 @@ void cutText(FileNode *selectedFile, int startPos, int endPos)
     while (temp != nullptr && currentPosition <= endPos)
     {
         cutText += temp->character;
-        selectedFile->cutBuffer.push(temp->character); // Push ke stack cutBuffer
+        push(selectedFile->cutBuffer, temp->character);
+        // Push ke stack cutBuffer
         temp = temp->next;
         currentPosition++;
     }
@@ -609,7 +707,7 @@ void deleteTextInRange(FileNode *selectedFile, int startPos, int endPos)
 // Fungsi untuk menempelkan teks dari cutBuffer setelah posisi kursor
 void pasteCutText(FileNode *selectedFile)
 {
-    if (selectedFile->cutBuffer.empty())
+    if (isStackEmpty(selectedFile->cutBuffer))
     {
         cout << "Tidak ada teks yang dipotong untuk ditempelkan.\n";
         return;
@@ -617,10 +715,10 @@ void pasteCutText(FileNode *selectedFile)
 
     // Mengambil teks yang dipotong dari cutBuffer
     string textToPaste;
-    while (!selectedFile->cutBuffer.empty())
+    while (!isStackEmpty(selectedFile->cutBuffer))
     {
-        textToPaste = selectedFile->cutBuffer.top() + textToPaste; // Membalik urutan stack
-        selectedFile->cutBuffer.pop();
+        textToPaste = top(selectedFile->cutBuffer) + textToPaste; // Membalik urutan stack
+        pop(selectedFile->cutBuffer);                             // Menghapus elemen teratas dari stack
     }
 
     // Menambahkan spasi setelah posisi kursor untuk memberikan jarak sebelum menempelkan teks
@@ -805,14 +903,14 @@ void replaceText(FileNode *selectedFile, string &searchText, string &replaceText
 // procedure melakukan undo
 void undo(FileNode *selectedFile)
 {
-    if (!selectedFile->undoRedo.undoStack.empty())
+    if (!isStackEmpty(selectedFile->undoRedo.undoStack))
     {
         // Ambil karakter terakhir dari undo stack
-        char lastChar = selectedFile->undoRedo.undoStack.top();
-        selectedFile->undoRedo.undoStack.pop();
+        char lastChar = top(selectedFile->undoRedo.undoStack);
+        pop(selectedFile->undoRedo.undoStack);
 
         // Simpan karakter yang di-undo ke redo queue
-        selectedFile->undoRedo.redoQueue.push(lastChar);
+        enqueue(selectedFile->undoRedo.redoQueue, lastChar);
 
         // Hapus karakter terakhir dari file
         CharNode *current = selectedFile->head;
@@ -848,16 +946,14 @@ void undo(FileNode *selectedFile)
 // Fungsi untuk melakukan redo
 void redo(FileNode *selectedFile)
 {
-    if (!selectedFile->undoRedo.redoQueue.empty())
+    if (!isQueueEmpty(selectedFile->undoRedo.redoQueue))
     {
-        char lastChar = selectedFile->undoRedo.redoQueue.front();
-        selectedFile->undoRedo.redoQueue.pop();
-
+        char lastChar = dequeue(selectedFile->undoRedo.redoQueue); // Mengambil karakter dari front
         // Tambahkan karakter ke file dengan versi ketiga
         addCharacterToFile(*selectedFile, lastChar);
 
         // Masukkan karakter ke undo stack
-        selectedFile->undoRedo.undoStack.push(lastChar);
+        push(selectedFile->undoRedo.undoStack, lastChar);
 
         // Update posisi kursor
         selectedFile->cursorPosition++;
@@ -891,7 +987,7 @@ void addCharacterToFile(FileNode &file, char character)
     }
 
     // Menyimpan perubahan ke dalam undo stack
-    file.undoRedo.undoStack.push(character);
+    push(file.undoRedo.undoStack, character);
 }
 
 // Menampilkan menu utama
