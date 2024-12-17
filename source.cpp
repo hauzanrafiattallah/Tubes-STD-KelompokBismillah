@@ -654,9 +654,16 @@ void cutText(FileNode *selectedFile, int startPos, int endPos)
     {
         // Jika kursor berada sebelum atau tepat pada teks yang dipotong,
         // kita harus mengurangi posisi kursor setelah penghapusan teks
-        selectedFile->cursorPosition = (selectedFile->cursorPosition >= endPos)
-                                           ? selectedFile->cursorPosition - (endPos - startPos + 1) // Geser kursor mundur
-                                           : startPos;                                              // Jika kursor berada di posisi setelah teks yang dipotong, tetap pada posisi startPos
+        if (selectedFile->cursorPosition >= endPos)
+        {
+            // Geser kursor mundur berdasarkan panjang teks yang dipotong
+            selectedFile->cursorPosition = selectedFile->cursorPosition - (endPos - startPos + 1);
+        }
+        else
+        {
+            // Jika kursor berada di posisi setelah teks yang dipotong, set posisi kursor ke startPos
+            selectedFile->cursorPosition = startPos;
+        }
     }
 
     cout << "Posisi kursor telah diperbarui: " << selectedFile->cursorPosition << endl;
