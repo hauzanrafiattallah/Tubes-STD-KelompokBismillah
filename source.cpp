@@ -572,6 +572,7 @@ void cutText(FileNode *selectedFile, int startPos, int endPos)
 
     cout << "Posisi kursor telah diperbarui: " << selectedFile->cursorPosition << endl;
 }
+
 // Fungsi untuk menghapus teks dalam rentang posisi (startPos - endPos)
 void deleteTextInRange(FileNode *selectedFile, int startPos, int endPos)
 {
