@@ -80,7 +80,7 @@ int findText(FileNode *selectedFile, string &searchText, int startPos);
 void replaceText(FileNode *selectedFile, string &searchText, string &replaceText, int startPos);
 void undo(FileNode *selectedFile);
 void redo(FileNode *selectedFile);
-void addCharacterToFile(FileNode &file, char character);
+void tambahCharacterWithUndo(FileNode &file, char character);
 
 // Fungsi menu
 void displayMainMenu();

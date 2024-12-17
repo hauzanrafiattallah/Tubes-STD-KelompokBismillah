@@ -861,7 +861,7 @@ void redo(FileNode *selectedFile)
     {
         char lastChar = dequeue(selectedFile->undoRedo.redoQueue); // Mengambil karakter dari front
         // Tambahkan karakter ke file dengan versi ketiga
-        addCharacterToFile(*selectedFile, lastChar);
+        tambahCharacterWithUndo(*selectedFile, lastChar);
 
         // Masukkan karakter ke undo stack
         push(selectedFile->undoRedo.undoStack, lastChar);
@@ -876,7 +876,7 @@ void redo(FileNode *selectedFile)
 }
 
 // Fungsi untuk menambah karakter dan menyimpan operasi untuk undo
-void addCharacterToFile(FileNode &file, char character)
+void tambahCharacterWithUndo(FileNode &file, char character)
 {
     // Tambahkan karakter ke dalam linked list
     CharNode *newNode = new CharNode; // Alokasi memori untuk CharNode
