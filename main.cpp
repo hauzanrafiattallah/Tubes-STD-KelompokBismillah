@@ -1,130 +1,128 @@
 #include "header.h"
+
 int main() {
     TextEditor editor;
     initializeEditor(editor);
 
-    int choice;
-    do {
+    int choice = -1;
+
+    // Menu utama
+    while (choice != 0) {
         displayMainMenu();
         cin >> choice;
         cin.ignore();
 
-        switch (choice) {
-            case 1: {
-                string fileName;
-                cout << "Masukkan nama file baru: ";
-                getline(cin, fileName);
-                addFile(editor, fileName);
-                cout << "File \"" << fileName << "\" berhasil ditambahkan.\n";
-                break;
-            }
-            case 2: {
-                int fileIndex = selectFile(editor);
-                if (fileIndex == -1) break;
+        if (choice == 1) {
+            string fileName;
+            cout << "Masukkan nama file baru: ";
+            getline(cin, fileName);
+            addFile(editor, fileName);
+            cout << "File \"" << fileName << "\" berhasil ditambahkan.\n";
+        } 
+        else if (choice == 2) {
+            int fileIndex = selectFile(editor);
 
+            if (fileIndex != -1) { // Jika pemilihan file tidak dibatalkan
                 FileNode* selectedFile = getFileByIndex(editor, fileIndex);
 
-                int fileChoice;
-                do {
+                int fileChoice = -1;
+                while (fileChoice != 0) {
                     displayFileMenu();
                     cin >> fileChoice;
                     cin.ignore();
 
-                    switch (fileChoice) {
-                        case 1:
-                            addTextToFile(editor, selectedFile);
-                            break;
-                        case 2:
-                            cout << "Isi file \"" << selectedFile->fileName << "\":\n";
-                            displayFileContent(selectedFile);
-                            break;
-                        case 3:
-                            int cursorChoice;
-                            cout << "Pindah kursor:\n";
-                            cout << "1. Pindah ke kanan\n";
-                            cout << "2. Pindah ke kiri\n";
-                            cin >> cursorChoice;
-                            cin.ignore();
-                            if (cursorChoice == 1) {
-                                moveCursorRight(selectedFile);
-                            } else if (cursorChoice == 2) {
-                                moveCursorLeft(selectedFile);
-                            } else {
-                                cout << "Pilihan tidak valid.\n";
-                            }
-                            break;
-                        case 4: // Hapus karakter di posisi kursor
-                            deleteCharacterAtCursor(selectedFile);
-                            break;
-                        case 5: // Sisipkan teks setelah posisi kursor
-                            insertTextAfterCursor(selectedFile);
-                            break;
-                        case 6: { // Pilih teks
-                            int startPos, endPos;
-                            cout << "Masukkan posisi awal teks yang ingin dipilih: ";
-                            cin >> startPos;
-                            cout << "Masukkan posisi akhir teks yang ingin dipilih: ";
-                            cin >> endPos;
-                            selectText(selectedFile, startPos, endPos);
-                            break;
-                        }
-                        case 7: { // Salin teks
-                            copyText(selectedFile);
-                            break;
-                        }
-                        case 8:
-                            {// Tempelkan teks
-                            pasteText(selectedFile);
-                            break;
-                        }
-                        case 9: {  // Potong teks
-                            int startPos, endPos;
-                            cout << "Masukkan posisi awal teks yang ingin dipotong: ";
-                            cin >> startPos;
-                            cout << "Masukkan posisi akhir teks yang ingin dipotong: ";
-                            cin >> endPos;
-                            cutText(selectedFile,startPos,endPos);
-                            break;
-                        }
-                        case 10: { // Find and Replace
-                            std::string searchText, replacementText;
-                            int startPos = 0; // Default posisi awal pencarian
+                    if (fileChoice == 1) {
+                        addTextToFile(editor, selectedFile);
+                    } 
+                    else if (fileChoice == 2) {
+                        cout << "Isi file \"" << selectedFile->fileName << "\":\n";
+                        displayFileContent(selectedFile);
+                    } 
+                    else if (fileChoice == 3) {
+                        int cursorChoice;
+                        cout << "Pindah kursor:\n";
+                        cout << "1. Pindah ke kanan\n";
+                        cout << "2. Pindah ke kiri\n";
+                        cin >> cursorChoice;
+                        cin.ignore();
 
-                            std::cout << "Masukkan teks yang ingin dicari: ";
-                            std::getline(std::cin, searchText);
-
-                            std::cout << "Masukkan teks pengganti: ";
-                            std::getline(std::cin, replacementText);
-
-                            replaceText(selectedFile, searchText, replacementText, startPos);
-                            break;
-                        }
-                         case 11: { // Undo
-                            undo(selectedFile);
-                            cout << "Undo berhasil.\n";
-                            break;
-                        }
-                        case 12: { // Redo
-                            redo(selectedFile);
-                            cout << "Redo berhasil.\n";
-                            break;
-                        }
-                        case 0:
-                            cout << "Kembali ke menu utama.\n";
-                            break;
-                        default:
+                        if (cursorChoice == 1) {
+                            moveCursorRight(selectedFile);
+                        } 
+                        else if (cursorChoice == 2) {
+                            moveCursorLeft(selectedFile);
+                        } 
+                        else {
                             cout << "Pilihan tidak valid.\n";
+                        }
+                    } 
+                    else if (fileChoice == 4) {
+                        deleteCharacterAtCursor(selectedFile);
+                    } 
+                    else if (fileChoice == 5) {
+                        insertTextAfterCursor(selectedFile);
+                    } 
+                    else if (fileChoice == 6) {
+                        int startPos, endPos;
+                        cout << "Masukkan posisi awal teks yang ingin dipilih: ";
+                        cin >> startPos;
+                        cout << "Masukkan posisi akhir teks yang ingin dipilih: ";
+                        cin >> endPos;
+                        selectText(selectedFile, startPos, endPos);
+                    } 
+                    else if (fileChoice == 7) {
+                        copyText(selectedFile);
+                    } 
+                    else if (fileChoice == 8) {
+                        pasteText(selectedFile);
+                    } 
+                    else if (fileChoice == 9) {
+                        int startPos, endPos;
+                        cout << "Masukkan posisi awal teks yang ingin dipotong: ";
+                        cin >> startPos;
+                        cout << "Masukkan posisi akhir teks yang ingin dipotong: ";
+                        cin >> endPos;
+                        cutText(selectedFile, startPos, endPos);
+                    } 
+                    else if (fileChoice == 10) {
+                        string searchText, replacementText;
+                        int startPos = 0;
+
+                        cout << "Masukkan teks yang ingin dicari: ";
+                        getline(cin, searchText);
+
+                        cout << "Masukkan teks pengganti: ";
+                        getline(cin, replacementText);
+
+                        replaceText(selectedFile, searchText, replacementText, startPos);
+                    } 
+                    else if (fileChoice == 11) {
+                        undo(selectedFile);
+                        cout << "Undo berhasil.\n";
+                    } 
+                    else if (fileChoice == 12) {
+                        redo(selectedFile);
+                        cout << "Redo berhasil.\n";
+                    } 
+                    else if (fileChoice == 0) {
+                        cout << "Kembali ke menu utama.\n";
+                    } 
+                    else {
+                        cout << "Pilihan tidak valid.\n";
                     }
-                } while (fileChoice != 0);
-                break;
+                }
+            } 
+            else {
+                cout << "Pemilihan file dibatalkan atau tidak valid.\n";
             }
-            case 0:
-                cout << "Terima kasih telah menggunakan editor teks ini. Sampai jumpa!\n";
-                break;
-            default:
-                cout << "Pilihan tidak valid.\n";
+        } 
+        else if (choice == 0) {
+            cout << "Terima kasih telah menggunakan editor teks ini. Sampai jumpa!\n";
+        } 
+        else {
+            cout << "Pilihan tidak valid.\n";
         }
-    } while (choice != 0);
+    }
 
     return 0;
 }
