@@ -64,7 +64,6 @@ FileNode *getFileByIndex(TextEditor &editor, int index);
 // Fungsi kursor
 void moveCursorLeft(FileNode *selectedFile);
 void moveCursorRight(FileNode *selectedFile);
-void displayCursorPosition(FileNode *selectedFile);
 
 // Fungsi untuk operasi file
 void addTextToFile(TextEditor &editor, FileNode *selectedFile);
