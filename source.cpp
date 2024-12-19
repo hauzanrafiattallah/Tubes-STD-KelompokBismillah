@@ -35,8 +35,6 @@ FileNode *findFile(TextEditor &editor, string &fileName)
     return nullptr; // Jika file tidak ditemukan
 }
 
-
-
 // Menambahkan teks ke dalam file setelah posisi kursor
 void addTextToFile(TextEditor &editor, FileNode *selectedFile)
 {
@@ -101,7 +99,6 @@ void addTextToFile(TextEditor &editor, FileNode *selectedFile)
     cout << "Paragraf berhasil ditambahkan ke file \"" << selectedFile->fileName << "\".\n";
 }
 
-
 // Fungsi untuk menambah karakter dan menyimpan operasi untuk undo
 void tambahCharacterWithUndo(FileNode &file, char character)
 {
@@ -146,8 +143,7 @@ void tambahCharacterWithUndo(FileNode &file, char character)
         dequeue(file.undoRedo.redoQueue);
     }
 
-    cout << "Karakter '" << character << "' berhasil ditambahkan. Posisi kursor saat ini: "
-         << file.cursorPosition << "\n";
+    cout << "Karakter '" << character << "' berhasil ditambahkan.\n";
 }
 
 // Menampilkan menu utama

@@ -93,7 +93,6 @@ void displayFileContent(FileNode *selectedFile)
     cout << "\n";
 }
 
-
 // Menghapus karakter di posisi kursor
 void deleteCharacterAtCursor(FileNode *selectedFile)
 {
@@ -143,12 +142,11 @@ void deleteCharacterAtCursor(FileNode *selectedFile)
         selectedFile->cursorPosition--;
     }
 
-    cout << "Karakter berhasil dihapus. Posisi kursor saat ini: " << selectedFile->cursorPosition << "\n";
+    cout << "Karakter berhasil dihapus.\n";
 
     // Tampilkan teks dengan kursor setelah karakter dihapus
     displayFileContent(selectedFile);
 }
-
 
 // Menyisipkan teks setelah posisi kursor
 void insertTextAfterCursor(FileNode *selectedFile)
@@ -192,7 +190,7 @@ void insertTextAfterCursor(FileNode *selectedFile)
     // Perbarui posisi kursor setelah teks yang disisipkan
     selectedFile->cursorPosition += textToInsert.length();
 
-    cout << "Teks berhasil disisipkan. Posisi kursor saat ini: " << selectedFile->cursorPosition << "\n";
+    cout << "Teks berhasil disisipkan.\n";
 
     // Tampilkan isi file dengan kursor
     displayFileContent(selectedFile);
