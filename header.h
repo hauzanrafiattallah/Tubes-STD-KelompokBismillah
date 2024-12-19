@@ -51,21 +51,20 @@ struct TextEditor
 };
 
 // Fungsi inisialisasi
-void initializeEditor(TextEditor &editor);
+void createTeksEditor(TextEditor &editor);
 
 // Fungsi file
-int selectFile(TextEditor &editor);
+int  selectFile(TextEditor &editor);
 void addFile(TextEditor &editor, string &fileName);
 void addCharacterToFile(TextEditor &editor, string &fileName, char character);
 void displayFiles(TextEditor &editor);
-FileNode *findFile(TextEditor &editor, string &fileName);
-FileNode *getFileByIndex(TextEditor &editor, int index);
+
 
 // Fungsi kursor
 void moveCursorLeft(FileNode *selectedFile);
 void moveCursorRight(FileNode *selectedFile);
 
-// Fungsi untuk operasi file
+// Fungsi fitur teks editor
 void addTextToFile(TextEditor &editor, FileNode *selectedFile);
 void displayFileContent(FileNode *selectedFile);
 void insertTextAfterCursor(FileNode *selectedFile);
@@ -76,24 +75,30 @@ void pasteText(FileNode *selectedFile);
 void cutText(FileNode *selectedFile, int startPos, int endPos);
 void deleteTextInRange(FileNode *selectedFile, int startPos, int endPos);
 void pasteCutText(FileNode *selectedFile);
-int findText(FileNode *selectedFile, string &searchText, int startPos);
 void replaceText(FileNode *selectedFile, string &searchText, string &replaceText, int startPos);
 void undo(FileNode *selectedFile);
 void redo(FileNode *selectedFile);
-void tambahCharacterWithUndo(FileNode &file, char character);
 
-// Fungsi menu
+
+// Sub fungsi atau procedure
+int findText(FileNode *selectedFile, string &searchText, int startPos);
+void tambahCharacterWithUndo(FileNode &file, char character);
+FileNode *findFile(TextEditor &editor, string &fileName);
+FileNode *getFileByIndex(TextEditor &editor, int index);
+
+// Fungsi display
 void displayMainMenu();
 void displayFileMenu();
 
 // Fungsi dan prosedur primitive untuk stack dan queue
-void createStack(CharStack &stack);
-bool isStackEmpty(CharStack &stack);
-void push(CharStack &stack, char value);
-char pop(CharStack &stack);
-void createQueue(CharQueue &queue);
-bool isQueueEmpty(CharQueue &queue);
-void enqueue(CharQueue &queue, char value);
-char dequeue(CharQueue &queue);
+void createStack(CharStack &Stack);
+bool isStackEmpty(CharStack &Stack);
+void push(CharStack &Stack, char value);
+char pop(CharStack &Stack);
+char top(CharStack &Stack);
+void createQueue(CharQueue &Queue);
+bool isQueueEmpty(CharQueue &Queue);
+void enqueue(CharQueue &Queue, char value);
+char dequeue(CharQueue &Queue);
 
 #endif

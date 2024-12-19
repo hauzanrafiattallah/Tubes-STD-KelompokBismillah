@@ -1,0 +1,23 @@
+# depslib dependency file v1.0
+1734597582 source:c:\users\user\documents\tubes\finaltekseditor\main.cpp
+	"header.h"
+
+1734598367 c:\users\user\documents\tubes\finaltekseditor\header.h
+	<iostream>
+	<string>
+
+1734596681 source:c:\users\user\documents\tubes\finaltekseditor\source.cpp
+	"header.h"
+
+1734596681 source:c:\users\user\documents\tubes\finaltekseditor\fiturtexteditor.cpp
+	"header.h"
+
+1734597503 source:c:\users\user\documents\tubes\finaltekseditor\primitive.cpp
+	"header.h"
+
+1734597571 source:c:\users\user\documents\tubes\finaltekseditor\fungsifile.cpp
+	"header.h"
+
+1734596790 c:\users\user\documents\tubes\finaltekseditor\primitive.cpp
+	"header.h"
+

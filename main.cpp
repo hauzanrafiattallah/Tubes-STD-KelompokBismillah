@@ -3,7 +3,7 @@
 int main()
 {
     TextEditor editor;
-    initializeEditor(editor);
+    createTeksEditor(editor);
 
     int choice = -1;
 
